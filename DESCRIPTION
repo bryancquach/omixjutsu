@@ -1,0 +1,27 @@
+Package: omixjutsu
+Title: Utilities for omics analysis tasks
+Version: 0.0.0.9000
+Authors@R: 
+  person(
+    given = "Bryan",
+    family = "Quach",
+    role = c("aut", "cre"),
+    email = "bquach@rti.org",
+    comment = c(ORCID = "0000-0002-1094-3104")
+  )
+Description: Provides functions for working with output from various software 
+  that process or analyze omics data. 
+Depends: R (>= 3.6.3)
+License: use_gpl3_license()
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports:
+  ggplot2 (>= 3.3.2),
+  ggridges (>= 0.5.2),
+  reshape2 (>= 1.4.4),
+  DESeq2 (>= 1.26.0),
+  IHW (>= 1.14.0),
+  robustbase (>= 0.93-5),
+  RColorBrewer (>= 1.1-2)
