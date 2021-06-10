@@ -6,8 +6,15 @@ The `omixjutsu` R package is a suite of utility functions for munging, analyzing
 
 # Installation
 
-The development version of this package can be installed using [`devtools`](https://devtools.r-lib.org/) as follows:
+The most recent development version of this package can be installed using [`devtools`](https://devtools.r-lib.org/) as follows:
 
 ```R
 devtools::install_github("bryancquach/omixjutsu")
+```
+
+To install a version from a specific commit use the `ref` option:
+
+```R
+# Replace <commit_id> with the desired commit ID (i.e., the SHA hash)
+devtools::install_github("bryancquach/omixjutsu", ref="<commit_id>")
 ```
