@@ -16,5 +16,5 @@ To install a version from a specific commit use the `ref` option:
 
 ```R
 # Replace <commit_id> with the desired commit ID (i.e., the SHA hash)
-devtools::install_github("bryancquach/omixjutsu", ref="<commit_id>")
+devtools::install_github("bryancquach/omixjutsu", ref = "<commit_id>")
 ```
