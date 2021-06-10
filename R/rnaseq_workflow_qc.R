@@ -1105,6 +1105,8 @@ plot_unique_read_pct <- function(data,
   }
   if (is.null(fill)) {
     ggout <- ggout + scale_fill_brewer(palette = "Dark2")
+  } else {
+    ggout <- ggout + scale_fill_manual(values = fill)
   }
   return(ggout)
 }
