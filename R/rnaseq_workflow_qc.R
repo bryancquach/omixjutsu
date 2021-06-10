@@ -905,7 +905,7 @@ plot_gc_mean <- function(data,
                          box_lwd = 1,
                          jitter_alpha = 0.75,
                          jitter_size = 1.75,
-                         x_title = "Mean of mean PHRED score",
+                         x_title = "Mean read GC content (%)",
                          y_title = "Sample count"){
   if (! is.null(ids)) {
     if (invert) {
