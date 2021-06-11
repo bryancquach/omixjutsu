@@ -15,7 +15,7 @@ plot_junction_saturation(
 }
 \arguments{
 \item{data}{A data frame with splice junction data in the same format as \code{known_junction}
-or \code{novel_junction} returned by \verb{\link{load_paired_end_qc_data}}.}
+or \code{novel_junction} returned by \code{\link{load_paired_end_qc_data}}.}
 
 \item{line_width}{A numeric. The line size for plot lines.}
 
@@ -34,5 +34,5 @@ A ggplot object.
 Create a splice junction saturation line plot.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

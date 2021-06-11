@@ -15,7 +15,7 @@ plot_hisat2_stats(
 }
 \arguments{
 \item{data}{A data frame HISAT2 mapping data in the same format as \code{hisat2} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{point_size}{A numeric. The size for data points.}
 
@@ -35,5 +35,5 @@ Create a concordant alignment vs. overall alignment rate scatterplot. Only appli
 paired-end sequencing data.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

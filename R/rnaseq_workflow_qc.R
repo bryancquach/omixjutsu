@@ -413,7 +413,7 @@ parse_by_trim_status <- function(data,
 #' Create a sequencing depth by sample scatterplot.
 #' 
 #' @param data A data frame with sequencing depth data in the same format as `fastqc` returned
-#'   by `\link{load_paired_end_qc_data}`.
+#'   by \code{\link{load_paired_end_qc_data}}.
 #' @param point_size A numeric. The size for data points.
 #' @param fill A string. The fill color for data points.
 #' @param alpha A numeric. The alpha level for data points.
@@ -421,7 +421,7 @@ parse_by_trim_status <- function(data,
 #' @param ids A vector of rownames for subsetting `data` for plotting.
 #' @param invert A logical. Should `ids` be used for excluding rows from plotting instead?
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_seq_depth <- function(data, 
                            point_size = 4, 
@@ -459,14 +459,14 @@ plot_seq_depth <- function(data,
 #' Create a sequencing depth histogram.
 #' 
 #' @param data A data frame with sequencing depth data in the same format as `fastqc` returned
-#'   by `\link{load_paired_end_qc_data}`.
+#'   by \code{\link{load_paired_end_qc_data}}.
 #' @param binsize A numeric value for the histogram bin widths.
 #' @param fill A string. The fill color for histogram bars.
 #' @param alpha A numeric. The alpha level for histogram bars.
 #' @param ids A vector of rownames for subsetting `data` for plotting.
 #' @param invert A logical. Should `ids` be used for excluding rows from plotting instead?
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_seq_depth_hist <- function(data, 
                                 binsize = NULL, 
@@ -503,7 +503,7 @@ plot_seq_depth_hist <- function(data,
 #' Create a line plot with per read PHRED frequencies.
 #' 
 #' @param data A list of data frames with data in the same format as `phred_seq` returned
-#'   by `\link{load_paired_end_qc_data}`. Each data frame is intended to represent a different
+#'   by \code{\link{load_paired_end_qc_data}}. Each data frame is intended to represent a different
 #'   category of data points (e.g., R1 vs. R2 reads in paired-end data).
 #' @param labels A vector of strings for legend labels corresponding to the data frames in `data`.
 #' @param line_colors A vector of strings. Line colors corresponding to the data frames in `data`.
@@ -512,7 +512,7 @@ plot_seq_depth_hist <- function(data,
 #' @param ids A vector of rownames for subsetting `data` for plotting.
 #' @param invert A logical. Should `ids` be used for excluding rows from plotting instead?
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_phred_per_read <- function(data,
                                 labels = NULL,
@@ -581,11 +581,11 @@ plot_phred_per_read <- function(data,
 #' Create a line plot with per base pair mean PHRED scores.
 #' 
 #' @param data A list of data frames with data in the same format as `phred_bp` returned
-#'   by `\link{load_paired_end_qc_data}`. Each data frame is intended to represent a different
+#'   by \code{\link{load_paired_end_qc_data}}. Each data frame is intended to represent a different
 #'   category of data points (e.g., R1 vs. R2 reads in paired-end data).
 #' @inheritParams plot_phred_per_read
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_phred_per_bp <- function(data,
                               labels = NULL,
@@ -655,7 +655,7 @@ plot_phred_per_bp <- function(data,
 #' are intended to be used as a single column, two row figure panel.
 #' 
 #' @param data A data frame with data in the same format as `phred_seq` returned by
-#'   `\link{load_paired_end_qc_data}`. 
+#'   \code{\link{load_paired_end_qc_data}}. 
 #' @param group A single column data frame denoting categorical variable values to use to 
 #'   partition the data points into separate distributions/boxplots. Row names should match rownames 
 #'   in `data`.
@@ -665,7 +665,7 @@ plot_phred_per_bp <- function(data,
 #' @inheritParams hist_boxplot2
 #' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
 #'   mean of mean PHRED scores and grouping variable.
-#' @seealso `\link{load_paired_end_qc_data}` `\link{hist_boxplot2}`
+#' @seealso \code{\link{load_paired_end_qc_data}} \code{\link{hist_boxplot2}}
 #' @export
 plot_phred_mean <- function(data,
                             group = NULL,
@@ -747,11 +747,11 @@ plot_phred_mean <- function(data,
 #' Create a line plot with read GC content distributions.
 #' 
 #' @param data A list of data frames with data in the same format as `gc_content` returned
-#'   by `\link{load_paired_end_qc_data}`. Each data frame is intended to represent a different
+#'   by \code{\link{load_paired_end_qc_data}}. Each data frame is intended to represent a different
 #'   category of data points (e.g., R1 vs. R2 reads in paired-end data).
 #' @inheritParams plot_phred_per_read
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_gc_content <- function(data,
                             labels = NULL,
@@ -819,11 +819,11 @@ plot_gc_content <- function(data,
 #' Create a GC content by sample histogram.
 #' 
 #' @param data A list of data frames with data in the same format as `fastqc` returned by 
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @param labels A vector of strings for legend labels corresponding to the data frames in `data`.
 #' @inheritParams plot_seq_depth_hist
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_gc_content_hist <- function(data, 
                                  binsize = 2.5, 
@@ -886,11 +886,11 @@ plot_gc_content_hist <- function(data,
 #' are intended to be used as a single column, two row figure panel.
 #'
 #' @param data A data frame with data in the same format as `gc_content` returned by
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_phred_mean
 #' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
 #'   mean GC content and grouping variable.
-#' @seealso `\link{load_paired_end_qc_data}` `\link{hist_boxplot2}`
+#' @seealso \code{\link{load_paired_end_qc_data}} \code{\link{hist_boxplot2}}
 #' @export
 plot_gc_mean <- function(data,
                          group = NULL,
@@ -972,11 +972,11 @@ plot_gc_mean <- function(data,
 #' Create a line plot with per position adapter frequency.
 #' 
 #' @param data A list of data frames with data in the same format as `adapter_content` returned
-#'   by `\link{load_paired_end_qc_data}`. Each data frame is intended to represent a different
+#'   by \code{\link{load_paired_end_qc_data}}. Each data frame is intended to represent a different
 #'   category of data points (e.g., R1 vs. R2 reads in paired-end data).
 #' @inheritParams plot_phred_per_read
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_adapter_content <- function(data,
                             labels = NULL,
@@ -1051,7 +1051,7 @@ plot_adapter_content <- function(data,
 #' @return A ggplot object. 
 #' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
 #'   unique read percentage and grouping variable.
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_unique_read_pct <- function(data,
                                  group = NULL,
@@ -1116,14 +1116,14 @@ plot_unique_read_pct <- function(data,
 #' Create a sequencing depth vs. unique read percentage scatterplot.
 #' 
 #' @param data A data frame with sequencing depth and unique read percentage data in the same 
-#'   format as `fastqc` returned by `\link{load_paired_end_qc_data}`.
+#'   format as `fastqc` returned by \code{\link{load_paired_end_qc_data}}.
 #' @param point_size A numeric. The size for data points.
 #' @param fill A string. The fill color for data points.
 #' @param alpha A numeric. The alpha level for data points.
 #' @param ids A vector of rownames for subsetting `data` for plotting.
 #' @param invert A logical. Should `ids` be used for excluding rows from plotting instead?
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_seq_depth_vs_lib_complexity <- function(data, 
                                              point_size = 4, 
@@ -1158,11 +1158,11 @@ plot_seq_depth_vs_lib_complexity <- function(data,
 #' Create a line plot with per sample sequence duplication levels.
 #' 
 #' @param data A list of data frames with data in the same format as `seq_duplication` returned
-#'   by `\link{load_paired_end_qc_data}`. Each data frame is intended to represent a different
+#'   by \code{\link{load_paired_end_qc_data}}. Each data frame is intended to represent a different
 #'   category of data points (e.g., R1 vs. R2 reads in paired-end data).
 #' @inheritParams plot_phred_per_read
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_seq_duplication <- function(data,
                                  labels = NULL,
@@ -1254,7 +1254,7 @@ plot_seq_duplication <- function(data,
 #' only works with Trimmomatic output for paired-end sequencing data.
 #'
 #' @param data A data frame with sequencing depth data in the same format as `trimmomatic` returned
-#'   by `\link{load_paired_end_qc_data}`.
+#'   by \code{\link{load_paired_end_qc_data}}.
 #' @param binsize A 2-item numeric vector that denotes the bin width for histogram bars. The 
 #'   first value is for the `excluded` plot, and the other value corresponds to the `retained` 
 #'   plot.
@@ -1264,7 +1264,7 @@ plot_seq_duplication <- function(data,
 #' @inheritParams plot_seq_depth_hist
 #' @return A list with two ggplot objects, `excluded` and `retained` that correspond to ggplot
 #'   objects for reads excluded and retained after Trimmomatic respectively.
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_trimmomatic_paired <- function(data, 
                                     binsize = c(2.5, 0.5), 
@@ -1325,14 +1325,14 @@ plot_trimmomatic_paired <- function(data,
 #' Create a fragment length frequency line plot.
 #' 
 #' @param data A data frame with fragment length data in the same format as `frag_length` returned
-#'   by `\link{load_paired_end_qc_data}`.
+#'   by \code{\link{load_paired_end_qc_data}}.
 #' @param line_width A numeric. The line size for plot lines.
 #' @param line_color A string. The color for plot lines.
 #' @param alpha A numeric. The alpha level for data points.
 #' @param ids A vector of rownames for subsetting `data` for plotting.
 #' @param invert A logical. Should `ids` be used for excluding rows from plotting instead?
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_frag_length <- function(data, 
                              line_width = 1.5, 
@@ -1383,10 +1383,10 @@ plot_frag_length <- function(data,
 #' Create a read count total vs. reads mapped scatterplot.
 #' 
 #' @param data A data frame Salmon mapping data in the same format as `salmon` returned by 
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_seq_depth_vs_lib_complexity
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_salmon_stats <- function(data, 
                              point_size = 4, 
@@ -1426,7 +1426,7 @@ plot_salmon_stats <- function(data,
 #' as a single column, two row figure panel.
 #' 
 #' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @param group A single column data frame denoting categorical variable values to use to 
 #'   partition the data points into separate distributions/boxplots. Row names should match rownames 
 #'   in `data`.
@@ -1437,7 +1437,7 @@ plot_salmon_stats <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{load_paired_end_qc_data}` `\link{hist_boxplot2}`
+#' @seealso \code{\link{load_paired_end_qc_data}} \code{\link{hist_boxplot2}}
 #' @export
 plot_salmon_mapping_pct <- function(data,  
                                     group = NULL,
@@ -1513,7 +1513,7 @@ plot_salmon_mapping_pct <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_salmon_mapped_reads <- function(data,
                                      group = NULL,
@@ -1584,11 +1584,11 @@ plot_salmon_mapped_reads <- function(data,
 #' as a single column, two row figure panel.
 #' 
 #' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_salmon_mapping_pct
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively.
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_decoy_mapping_rate <- function(data,  
                                     ids = NULL, 
@@ -1637,11 +1637,11 @@ plot_decoy_mapping_rate <- function(data,
 #' used as a single column, two row figure panel.
 #' 
 #' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_salmon_mapping_pct
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively.
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_dovetail_mapping_rate <- function(data,  
                                        ids = NULL, 
@@ -1690,11 +1690,11 @@ plot_dovetail_mapping_rate <- function(data,
 #' be used as a single column, two row figure panel.
 #' 
 #' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_salmon_mapping_pct
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively.
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_salmon_score_filtered_rate <- function(data,  
                                             ids = NULL, 
@@ -1743,11 +1743,11 @@ plot_salmon_score_filtered_rate <- function(data,
 #' a single column, two row figure panel.
 #' 
 #' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_salmon_mapping_pct
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively.
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_failed_mapping_count <- function(data,  
                                       ids = NULL, 
@@ -1800,7 +1800,7 @@ plot_failed_mapping_count <- function(data,
 #' Categories are not mutually exclusive. X-axes are ordered the same across plots. 
 #'
 #' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @param fill A string vector with 4 colors corresponding to bars for the barplots for the 
 #'   transcriptome, decoys, dovetails, and filtered mappings respectively.
 #' @param sort A logical. Should the x-axis be ordered by transcriptome mapping rate?
@@ -1809,7 +1809,7 @@ plot_failed_mapping_count <- function(data,
 #' @return A list with four ggplot objects `transcriptome`, `decoy`, `dovetail`, and `filtered`
 #'   that correspond to the plots for the transcriptome, decoys, dovetails, and filtered mappings
 #'   respectively.
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 plot_salmon_categories <- function(data,
                                    fill = brewer.pal(n = 4, name = "Spectral"),
                                    sort = F,
@@ -1904,10 +1904,10 @@ plot_salmon_categories <- function(data,
 #' paired-end sequencing data.
 #'
 #' @param data A data frame HISAT2 mapping data in the same format as `hisat2` returned by
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_seq_depth_vs_lib_complexity
 #' @return A ggplot object.
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_hisat2_stats <- function(data,
                               point_size = 4,
@@ -1952,13 +1952,13 @@ plot_hisat2_stats <- function(data,
 #' data.
 #'
 #' @param data A data frame with HISAT2 mapping data in the same format as `hisat2` returned by
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @param ids A vector of rownames for subsetting `data` for plotting.
 #' @param invert A logical. Should `ids` be used for excluding rows from plotting instead?
 #' @inheritParams hist_boxplot
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively.
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_hisat2_mapping_rate <- function(data,
                                      ids = NULL,
@@ -2008,11 +2008,11 @@ plot_hisat2_mapping_rate <- function(data,
 #' as a single column, two row figure panel. Only applicable for paired-end sequencing data.
 #'
 #' @param data A data frame with HISAT2 mapping data in the same format as `hisat2` returned by
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_hisat2_mapping_rate
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively.
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_hisat2_mapped_reads <- function(data,
                                      ids = NULL,
@@ -2069,13 +2069,13 @@ plot_hisat2_mapped_reads <- function(data,
 #' name. 
 #'
 #' @param hisat_data A data frame of HISAT2 mapping data in the same format as `hisat2` returned by
-#'   `\link{load_paired_end_qc_data}`.
+#'   \code{\link{load_paired_end_qc_data}}.
 #' @param salmon_data A data frame of Salmon mapping data in the same format as `hisat2` returned
-#'   by `\link{load_paired_end_qc_data}`.
+#'   by \code{\link{load_paired_end_qc_data}}.
 #' @param ids A vector of rownames for subsetting `hisat_data` and `salmon_data` for plotting.
 #' @inheritParams plot_seq_depth_vs_lib_complexity
 #' @return A ggplot object.
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_hisat2_vs_salmon <- function(hisat_data,
                                   salmon_data,
@@ -2129,10 +2129,10 @@ plot_hisat2_vs_salmon <- function(hisat_data,
 #' Create a splice junction saturation line plot.
 #' 
 #' @param data A data frame with splice junction data in the same format as `known_junction`
-#'   or `novel_junction` returned by `\link{load_paired_end_qc_data}`.
+#'   or `novel_junction` returned by \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_frag_length
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_junction_saturation <- function(data, 
                              line_width = 1.5, 
@@ -2183,14 +2183,14 @@ plot_junction_saturation <- function(data,
 #' data.
 #' 
 #' @param data A data frame with fragment length data in the same format as `inner_dist` returned
-#'   by `\link{load_paired_end_qc_data}`.
+#'   by \code{\link{load_paired_end_qc_data}}.
 #' @param line_width A numeric. The line size for plot lines.
 #' @param line_color A string. The color for plot lines.
 #' @param alpha A numeric. The alpha level for data points.
 #' @param ids A vector of rownames for subsetting `data` for plotting.
 #' @param invert A logical. Should `ids` be used for excluding rows from plotting instead?
 #' @return A ggplot object. 
-#' @seealso `\link{load_paired_end_qc_data}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} 
 #' @export
 plot_inner_dist <- function(data, 
                             line_width = 1.5, 
@@ -2250,7 +2250,7 @@ plot_inner_dist <- function(data,
 #' intronic, and exonic regions.
 #'
 #' @param data A data frame with annotation data in the same format as `rseqc_alignment_category` 
-#'   returned by `\link{load_paired_end_qc_data}`.
+#'   returned by \code{\link{load_paired_end_qc_data}}.
 #' @param fill A string vector with 3 or 6 colors corresponding to cateogires for the barplot.
 #' @param sort A logical. Should the x-axis be ordered by coding sequence/exonic alignment 
 #'   percentage?
@@ -2261,7 +2261,7 @@ plot_inner_dist <- function(data,
 #' @param return_data A logical. Should plot data be returned instead of a ggplot object?
 #' @return A ggplot object.  If `return_data` is `TRUE`, then a data frame with the plot data 
 #'   values for each genomic annotation category as columns.
-#' @seealso `\link{load_paired_end_qc_data}`
+#' @seealso \code{\link{load_paired_end_qc_data}}
 #' @export
 plot_mapping_categories <- function(data,
                                     fill = NULL,
@@ -2371,7 +2371,7 @@ plot_mapping_categories <- function(data,
 #' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
 #'   user-specified PCs, grouping variable, and an attribute for the percent variace explained for
 #'   each user-specified PC.
-#' @seealso `\link{prcomp}` `\link{SummarizedExperiment}` `\link{assay}` `\link{colData}`
+#' @seealso \code{\link{prcomp}} \code{\link{SummarizedExperiment}} \code{\link{assay}} \code{\link{colData}}
 #' @export
 plot_pca <- function(data,
                      ids = NULL,
@@ -2437,7 +2437,7 @@ plot_pca <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{load_paired_end_qc_data}` `\link{hist_boxplot2}`
+#' @seealso \code{\link{load_paired_end_qc_data}} \code{\link{hist_boxplot2}}
 #' @export
 plot_expression_fraction <- function(data,                                      
                                      group = NULL,
@@ -2528,7 +2528,7 @@ plot_expression_fraction <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{load_paired_end_qc_data}` `\link{hist_boxplot2}` 
+#' @seealso \code{\link{load_paired_end_qc_data}} \code{\link{hist_boxplot2}} 
 #' @export
 plot_shannon_index <- function(data,
                                group = NULL,
@@ -2638,7 +2638,7 @@ plot_shannon_index <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{hist_boxplot2}`
+#' @seealso \code{\link{hist_boxplot2}}
 #' @export
 plot_partitioned_mean_expression <- function(data,
                                              group_var,
@@ -2716,7 +2716,7 @@ plot_partitioned_mean_expression <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{hist_boxplot2}` `\link{prcomp}`
+#' @seealso \code{\link{hist_boxplot2}} \code{\link{prcomp}}
 #' @export
 plot_partitioned_pc <- function(data,
                                 pc = 1,
@@ -2798,7 +2798,7 @@ plot_partitioned_pc <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{hist_boxplot2}`
+#' @seealso \code{\link{hist_boxplot2}}
 #' @export
 plot_rin <- function(data,
                      group = NULL,
@@ -2869,7 +2869,7 @@ plot_rin <- function(data,
 #'
 #' Calculates the ratio between intergenic and intronic mapping rates and plots this as a histogram
 #' and boxplot. The two plots are intended to be used as a single column, two row figure panel. The
-#' intergenic and intronic mapping rates can be calculated uing `\link{plot_mapping_categories}`.
+#' intergenic and intronic mapping rates can be calculated uing \code{\link{plot_mapping_categories}}.
 #'
 #' @param data A two column data frame with intergenic mapping rates as the first column and 
 #'   intronic mapping rates as the second column.
@@ -2883,7 +2883,7 @@ plot_rin <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{plot_mapping_categories}` `\link{hist_boxplot2}`
+#' @seealso \code{\link{plot_mapping_categories}} \code{\link{hist_boxplot2}}
 #' @export
 plot_dna_contamination_ratio <- function(data,
                                          group = NULL,
@@ -2957,7 +2957,7 @@ plot_dna_contamination_ratio <- function(data,
 #' Calculates the gene mapping rate (combined exonic and intronic mapping rates) and plots this as 
 #' a histogram and boxplot. The two plots are intended to be used as a single column, two row 
 #' figure panel. The exonic and intronic mapping rates can be calculated uing 
-#' `\link{plot_mapping_categories}`.
+#' \code{\link{plot_mapping_categories}}.
 #'
 #' @param data A two column data frame with exonic mapping rates as the first column and 
 #'   intronic mapping rates as the second column.
@@ -2971,7 +2971,7 @@ plot_dna_contamination_ratio <- function(data,
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
 #'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
 #'   data values and grouping variable.
-#' @seealso `\link{plot_mapping_categories}` `\link{hist_boxplot2}`
+#' @seealso \code{\link{plot_mapping_categories}} \code{\link{hist_boxplot2}}
 #' @export
 plot_gene_mapping_rate <- function(data,
                                    group = NULL,

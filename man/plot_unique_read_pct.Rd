@@ -18,7 +18,7 @@ plot_unique_read_pct(
 }
 \arguments{
 \item{data}{A data frame with sequencing depth data in the same format as \code{fastqc} returned
-by \verb{\link{load_paired_end_qc_data}}.}
+by \code{\link{load_paired_end_qc_data}}.}
 
 \item{group}{A single column data frame denoting categorical variable values to use to
 partition the data points into separate distributions/boxplots. Row names should match rownames
@@ -48,5 +48,5 @@ unique read percentage and grouping variable.
 Create a unique read percentage by sample scatterplot.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

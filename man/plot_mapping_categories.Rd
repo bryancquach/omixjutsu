@@ -16,7 +16,7 @@ plot_mapping_categories(
 }
 \arguments{
 \item{data}{A data frame with annotation data in the same format as \code{rseqc_alignment_category}
-returned by \verb{\link{load_paired_end_qc_data}}.}
+returned by \code{\link{load_paired_end_qc_data}}.}
 
 \item{fill}{A string vector with 3 or 6 colors corresponding to cateogires for the barplot.}
 
@@ -46,5 +46,5 @@ Includes the option to consolidate categories into more general categories for i
 intronic, and exonic regions.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

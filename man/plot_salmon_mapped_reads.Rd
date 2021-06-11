@@ -24,7 +24,7 @@ plot_salmon_mapped_reads(
 }
 \arguments{
 \item{data}{A data frame with Salmon mapping data in the same format as \code{salmon} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{group}{A single column data frame denoting categorical variable values to use to
 partition the data points into separate distributions/boxplots. Row names should match rownames
@@ -70,5 +70,5 @@ Create a Salmon mapped read count histogram and boxplot. The two plots are inten
 as a single column, two row figure panel.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

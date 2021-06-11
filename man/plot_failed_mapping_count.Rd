@@ -23,7 +23,7 @@ plot_failed_mapping_count(
 }
 \arguments{
 \item{data}{A data frame with Salmon mapping data in the same format as \code{salmon} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{ids}{A vector of rownames for subsetting \code{data} for plotting.}
 
@@ -56,5 +56,5 @@ Create a Salmon failed mapping histogram and boxplot. The two plots are intended
 a single column, two row figure panel.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

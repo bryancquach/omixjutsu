@@ -15,7 +15,7 @@ plot_seq_depth_vs_lib_complexity(
 }
 \arguments{
 \item{data}{A data frame with sequencing depth and unique read percentage data in the same
-format as \code{fastqc} returned by \verb{\link{load_paired_end_qc_data}}.}
+format as \code{fastqc} returned by \code{\link{load_paired_end_qc_data}}.}
 
 \item{point_size}{A numeric. The size for data points.}
 
@@ -34,5 +34,5 @@ A ggplot object.
 Create a sequencing depth vs. unique read percentage scatterplot.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

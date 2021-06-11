@@ -16,10 +16,10 @@ plot_hisat2_vs_salmon(
 }
 \arguments{
 \item{hisat_data}{A data frame of HISAT2 mapping data in the same format as \code{hisat2} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{salmon_data}{A data frame of Salmon mapping data in the same format as \code{hisat2} returned
-by \verb{\link{load_paired_end_qc_data}}.}
+by \code{\link{load_paired_end_qc_data}}.}
 
 \item{point_size}{A numeric. The size for data points.}
 
@@ -45,5 +45,5 @@ assumption that sample names are equivalent up until the first \code{|} delimite
 name.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

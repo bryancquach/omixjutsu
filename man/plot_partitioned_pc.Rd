@@ -89,5 +89,5 @@ single column, two row figure panel. Data points in the plots are partitioned by
 variable.
 }
 \seealso{
-\verb{\link{hist_boxplot2}} \verb{\link{prcomp}}
+\code{\link{hist_boxplot2}} \code{\link{prcomp}}
 }

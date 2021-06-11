@@ -69,8 +69,8 @@ Create a gene mapping rate histogram and boxplot.
 Calculates the gene mapping rate (combined exonic and intronic mapping rates) and plots this as
 a histogram and boxplot. The two plots are intended to be used as a single column, two row
 figure panel. The exonic and intronic mapping rates can be calculated uing
-\verb{\link{plot_mapping_categories}}.
+\code{\link{plot_mapping_categories}}.
 }
 \seealso{
-\verb{\link{plot_mapping_categories}} \verb{\link{hist_boxplot2}}
+\code{\link{plot_mapping_categories}} \code{\link{hist_boxplot2}}
 }

@@ -16,7 +16,7 @@ plot_gc_content_hist(
 }
 \arguments{
 \item{data}{A list of data frames with data in the same format as \code{fastqc} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{binsize}{A numeric value for the histogram bin widths.}
 
@@ -37,5 +37,5 @@ A ggplot object.
 Create a GC content by sample histogram.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

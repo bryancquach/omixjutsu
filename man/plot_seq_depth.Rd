@@ -16,7 +16,7 @@ plot_seq_depth(
 }
 \arguments{
 \item{data}{A data frame with sequencing depth data in the same format as \code{fastqc} returned
-by \verb{\link{load_paired_end_qc_data}}.}
+by \code{\link{load_paired_end_qc_data}}.}
 
 \item{point_size}{A numeric. The size for data points.}
 
@@ -37,5 +37,5 @@ A ggplot object.
 Create a sequencing depth by sample scatterplot.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

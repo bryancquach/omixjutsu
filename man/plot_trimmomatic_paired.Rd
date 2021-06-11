@@ -15,7 +15,7 @@ plot_trimmomatic_paired(
 }
 \arguments{
 \item{data}{A data frame with sequencing depth data in the same format as \code{trimmomatic} returned
-by \verb{\link{load_paired_end_qc_data}}.}
+by \code{\link{load_paired_end_qc_data}}.}
 
 \item{binsize}{A 2-item numeric vector that denotes the bin width for histogram bars. The
 first value is for the \code{excluded} plot, and the other value corresponds to the \code{retained}
@@ -44,5 +44,5 @@ produce sample frequency histograms of read retention and filtering rates. Note:
 only works with Trimmomatic output for paired-end sequencing data.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

@@ -66,5 +66,5 @@ Create a histogram and boxplot of RIN scores. The two plots are intended to be u
 column, two row figure panel.
 }
 \seealso{
-\verb{\link{hist_boxplot2}}
+\code{\link{hist_boxplot2}}
 }

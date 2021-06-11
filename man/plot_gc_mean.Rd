@@ -18,13 +18,13 @@ plot_gc_mean(
   box_lwd = 1,
   jitter_alpha = 0.75,
   jitter_size = 1.75,
-  x_title = "Mean of mean PHRED score",
+  x_title = "Mean read GC content (\%)",
   y_title = "Sample count"
 )
 }
 \arguments{
 \item{data}{A data frame with data in the same format as \code{gc_content} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{group}{A single column data frame denoting categorical variable values to use to
 partition the data points into separate distributions/boxplots. Row names should match rownames
@@ -66,5 +66,5 @@ Create a histogram and boxplot of per sample mean read GC content. The two plots
 are intended to be used as a single column, two row figure panel.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}} \verb{\link{hist_boxplot2}}
+\code{\link{load_paired_end_qc_data}} \code{\link{hist_boxplot2}}
 }

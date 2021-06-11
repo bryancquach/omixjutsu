@@ -54,4 +54,8 @@ Creates a histogram and jittered boxplot.
 Creates two plots that can be organized as a single column two row multi-figure. The top row
 plot is a histogram. The bottom row plot is a horizontal boxplot with jittered data points
 overlayed. The x-axis of both plots are fixed to the same limits for comparability across plots.
+To create these plots but partitioned by a categorical variable, see \code{\link{hist_boxplot2}}.
+}
+\seealso{
+\code{\link{hist_boxplot2}}
 }

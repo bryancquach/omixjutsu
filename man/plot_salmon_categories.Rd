@@ -14,7 +14,7 @@ plot_salmon_categories(
 }
 \arguments{
 \item{data}{A data frame with Salmon mapping data in the same format as \code{salmon} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{fill}{A string vector with 4 colors corresponding to bars for the barplots for the
 transcriptome, decoys, dovetails, and filtered mappings respectively.}
@@ -39,5 +39,5 @@ mapped to the transcriptome, decoy fragments, as dovetails, and as low-score fil
 Categories are not mutually exclusive. X-axes are ordered the same across plots.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

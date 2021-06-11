@@ -16,7 +16,7 @@ plot_phred_per_bp(
 }
 \arguments{
 \item{data}{A list of data frames with data in the same format as \code{phred_bp} returned
-by \verb{\link{load_paired_end_qc_data}}. Each data frame is intended to represent a different
+by \code{\link{load_paired_end_qc_data}}. Each data frame is intended to represent a different
 category of data points (e.g., R1 vs. R2 reads in paired-end data).}
 
 \item{labels}{A vector of strings for legend labels corresponding to the data frames in \code{data}.}
@@ -38,5 +38,5 @@ A ggplot object.
 Create a line plot with per base pair mean PHRED scores.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

@@ -23,7 +23,7 @@ plot_hisat2_mapping_rate(
 }
 \arguments{
 \item{data}{A data frame with HISAT2 mapping data in the same format as \code{hisat2} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{ids}{A vector of rownames for subsetting \code{data} for plotting.}
 
@@ -61,5 +61,5 @@ be used as a single column, two row figure panel. Only applicable for paired-end
 data.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

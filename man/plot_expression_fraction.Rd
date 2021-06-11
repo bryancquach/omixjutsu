@@ -79,5 +79,5 @@ of features and plots this as a histogram and boxplot. The two plots are intende
 a single column, two row figure panel.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}} \verb{\link{hist_boxplot2}}
+\code{\link{load_paired_end_qc_data}} \code{\link{hist_boxplot2}}
 }

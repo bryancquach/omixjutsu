@@ -15,7 +15,7 @@ plot_inner_dist(
 }
 \arguments{
 \item{data}{A data frame with fragment length data in the same format as \code{inner_dist} returned
-by \verb{\link{load_paired_end_qc_data}}.}
+by \code{\link{load_paired_end_qc_data}}.}
 
 \item{line_width}{A numeric. The line size for plot lines.}
 
@@ -35,5 +35,5 @@ Create a paired-end read inner distance line plot. Applicable only to paired-end
 data.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

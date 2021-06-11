@@ -15,7 +15,7 @@ plot_salmon_stats(
 }
 \arguments{
 \item{data}{A data frame Salmon mapping data in the same format as \code{salmon} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{point_size}{A numeric. The size for data points.}
 
@@ -34,5 +34,5 @@ A ggplot object.
 Create a read count total vs. reads mapped scatterplot.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}}
+\code{\link{load_paired_end_qc_data}}
 }

@@ -8,6 +8,7 @@
 #' Creates two plots that can be organized as a single column two row multi-figure. The top row
 #' plot is a histogram. The bottom row plot is a horizontal boxplot with jittered data points
 #' overlayed. The x-axis of both plots are fixed to the same limits for comparability across plots.
+#' To create these plots but partitioned by a categorical variable, see \code{\link{hist_boxplot2}}.
 #'
 #' @param data A single column data frame with numeric values to be plotted.
 #' @param binsize A numeric value for the histogram bin widths.
@@ -22,6 +23,7 @@
 #' @param x_title A string denoting the x-axis title. Only added to the boxplot.
 #' @param y_title A string denoting the y-axis title. Only added to the histogram.
 #' @return A list of two ggplot objects `hist` and `boxplot`.
+#' @seealso \code{\link{hist_boxplot2}}
 #' @export
 hist_boxplot <- function(data,
                          binsize = diff(range(data[, 1])) / 50,
@@ -139,7 +141,8 @@ hist_boxplot <- function(data,
 #' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
 #'   user-specified PCs, grouping variable, and an attribute for the percent variace explained for
 #'   each user-specified PC.
-#' @seealso `\link{prcomp}` `\link{SummarizedExperiment}` `\link{assay}` `\link{colData}`
+#' @seealso \code{\link{prcomp}} \code{\link{SummarizedExperiment}} \code{\link{assay}} 
+#'   \code{\link{colData}}
 ggpca <- function(data, 
                   group_var = NULL, 
                   pc_x = 1, 

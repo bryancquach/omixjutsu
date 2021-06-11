@@ -24,7 +24,7 @@ plot_phred_mean(
 }
 \arguments{
 \item{data}{A data frame with data in the same format as \code{phred_seq} returned by
-\verb{\link{load_paired_end_qc_data}}.}
+\code{\link{load_paired_end_qc_data}}.}
 
 \item{group}{A single column data frame denoting categorical variable values to use to
 partition the data points into separate distributions/boxplots. Row names should match rownames
@@ -66,5 +66,5 @@ Create a histogram and boxplot of per sample mean of per read mean PHRED scores.
 are intended to be used as a single column, two row figure panel.
 }
 \seealso{
-\verb{\link{load_paired_end_qc_data}} \verb{\link{hist_boxplot2}}
+\code{\link{load_paired_end_qc_data}} \code{\link{hist_boxplot2}}
 }
