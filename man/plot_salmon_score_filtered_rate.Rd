@@ -6,15 +6,16 @@
 \usage{
 plot_salmon_score_filtered_rate(
   data,
+  group = NULL,
   ids = NULL,
   invert = F,
+  return_data = F,
   binsize = NULL,
-  hist_fill = "gray10",
+  colors = NULL,
   hist_alpha = 0.75,
   box_fill = "goldenrod",
   box_alpha = 0.5,
   box_lwd = 1,
-  jitter_color = "gray30",
   jitter_alpha = 0.75,
   jitter_size = 1.75,
   x_title = "\% low-score filtered fragments",
@@ -25,11 +26,20 @@ plot_salmon_score_filtered_rate(
 \item{data}{A data frame with Salmon mapping data in the same format as \code{salmon} returned by
 \code{\link{load_paired_end_qc_data}}.}
 
+\item{group}{A single column data frame denoting categorical variable values to use to
+partition the data points into separate distributions/boxplots. Row names should match rownames
+in \code{data}.}
+
 \item{ids}{A vector of rownames for subsetting \code{data} for plotting.}
 
 \item{invert}{A logical. Should \code{ids} be used for excluding rows from plotting instead?}
 
+\item{return_data}{A logical. Should plot data be returned instead of a ggplot object?}
+
 \item{binsize}{A numeric value for the histogram bin widths.}
+
+\item{colors}{A string vector. The histogram bar colors and jitter colors for each categorical
+variable value.}
 
 \item{hist_alpha}{A numeric value for the alpha level for histogram bars.}
 
@@ -48,13 +58,17 @@ plot_salmon_score_filtered_rate(
 \item{y_title}{A string denoting the y-axis title. Only added to the histogram.}
 }
 \value{
+A ggplot object unless \code{return_data} is \code{TRUE}, then a data frame with the
+mean of mean PHRED scores and grouping variable.
+
 A list with two ggplot objects \code{hist} and \code{boxplot} corresponding to a histogram and
-jittered boxplot respectively.
+jittered boxplot respectively. If \code{return_data} is \code{TRUE}, then a data frame with the plot
+data values and grouping variable.
 }
 \description{
 Create a Salmon score-based filtering rate histogram and boxplot. The two plots are intended to
 be used as a single column, two row figure panel.
 }
 \seealso{
-\code{\link{load_paired_end_qc_data}}
+\verb{\link{load_paired_end_qc_data}}
 }

@@ -1580,26 +1580,28 @@ plot_salmon_mapped_reads <- function(data,
 
 #' Plot Salmon percent decoy fragments
 #' 
-#' Create a Salmon decoy mapping rate histogram and boxplot. The two plots are intended to be used 
+#' Create a Salmon decoy mapping rate histogram and boxplot. The two plots are intended to be used
 #' as a single column, two row figure panel.
-#' 
-#' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   \code{\link{load_paired_end_qc_data}}.
+#'
 #' @inheritParams plot_salmon_mapping_pct
+#' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
+#'   mean of mean PHRED scores and grouping variable.
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
-#'   jittered boxplot respectively.
-#' @seealso \code{\link{load_paired_end_qc_data}} 
+#'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
+#'   data values and grouping variable.
+#' @seealso `\link{load_paired_end_qc_data}`
 #' @export
-plot_decoy_mapping_rate <- function(data,  
-                                    ids = NULL, 
+plot_decoy_mapping_rate <- function(data,
+                                    group = NULL,
+                                    ids = NULL,
                                     invert = F,
+                                    return_data = F,
                                     binsize = NULL,
-                                    hist_fill = "gray10",
+                                    colors = NULL,
                                     hist_alpha = 0.75,
                                     box_fill = "goldenrod",
                                     box_alpha = 0.5,
                                     box_lwd = 1,
-                                    jitter_color = "gray30",
                                     jitter_alpha = 0.75,
                                     jitter_size = 1.75,
                                     x_title = "% mapped to decoys",
@@ -1611,48 +1613,71 @@ plot_decoy_mapping_rate <- function(data,
       data <- data[rownames(data) %in% ids, , drop = F]
     }
   }
-  plot_data <- data.frame(percent = (data$num_decoy_fragments / data$num_processed) * 100)
-  if (is.null(binsize)) {
-    binsize = diff(range(plot_data$percent)) / 25
+  group0 <- group
+  if (is.null(group)) {
+    group <- data.frame(group = factor(rep(1, nrow(data))))
+    rownames(group) <- rownames(data)
   }
-  ggout_list <- hist_boxplot(
+  plot_data <- data.frame(values = (data$num_decoy_fragments / data$num_processed) * 100)
+  rownames(plot_data) <- rownames(data)
+  plot_data <- merge(x = plot_data, y = group, by = 0, all = F)
+  rownames(plot_data) <- plot_data[,1]
+  plot_data <- plot_data[,-1] #remove new row name column
+  plot_data$values <- as.numeric(plot_data$values)
+  if (nrow(data) > nrow(plot_data)) {
+    warning("Not all samples from 'data' have a value in 'group'")
+  }
+  if (is.null(binsize)) {
+    binsize <- diff(range(plot_data$values)) / 25
+  }
+  if (return_data) {
+    return(plot_data)
+  }
+  ggout_list <- hist_boxplot2(
     plot_data,
     binsize = binsize,
-    hist_fill = hist_fill,
+    colors = colors,
     hist_alpha = hist_alpha,
     box_fill = box_fill,
     box_alpha = box_alpha,
     box_lwd = box_lwd,
-    jitter_color = jitter_color,
     jitter_alpha = jitter_alpha,
     jitter_size = jitter_size,
     x_title = x_title,
-    y_title = y_title) 
+    y_title = y_title)
+  if (is.null(group0)) {
+    ggout_list$hist <- ggout_list$hist +
+      theme(legend.position = "none")
+    ggout_list$boxplot <- ggout_list$boxplot +
+      theme(legend.position = "none")
+  }
   return(ggout_list)
 }
 
 #' Plot Salmon percent dovetail fragments
 #' 
-#' Create a Salmon dovetail mapping rate histogram and boxplot. The two plots are intended to be 
-#' used as a single column, two row figure panel.
-#' 
-#' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   \code{\link{load_paired_end_qc_data}}.
+#' Create a Salmon dovetail fragment percentage histogram and boxplot. The two plots are intended 
+#' to be used as a single column, two row figure panel.
+#'
 #' @inheritParams plot_salmon_mapping_pct
+#' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
+#'   mean of mean PHRED scores and grouping variable.
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
-#'   jittered boxplot respectively.
-#' @seealso \code{\link{load_paired_end_qc_data}} 
+#'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
+#'   data values and grouping variable.
+#' @seealso `\link{load_paired_end_qc_data}`
 #' @export
-plot_dovetail_mapping_rate <- function(data,  
-                                       ids = NULL, 
+plot_dovetail_mapping_rate <- function(data,
+                                       group = NULL,
+                                       ids = NULL,
                                        invert = F,
+                                       return_data = F,
                                        binsize = NULL,
-                                       hist_fill = "gray10",
+                                       colors = NULL,
                                        hist_alpha = 0.75,
                                        box_fill = "goldenrod",
                                        box_alpha = 0.5,
                                        box_lwd = 1,
-                                       jitter_color = "gray30",
                                        jitter_alpha = 0.75,
                                        jitter_size = 1.75,
                                        x_title = "% dovetail fragments",
@@ -1664,23 +1689,44 @@ plot_dovetail_mapping_rate <- function(data,
       data <- data[rownames(data) %in% ids, , drop = F]
     }
   }
-  plot_data <- data.frame(percent = (data$num_dovetail_fragments / data$num_processed) * 100)
-  if (is.null(binsize)) {
-    binsize = diff(range(plot_data$percent)) / 25
+  group0 <- group
+  if (is.null(group)) {
+    group <- data.frame(group = factor(rep(1, nrow(data))))
+    rownames(group) <- rownames(data)
   }
-  ggout_list <- hist_boxplot(
+  plot_data <- data.frame(values = (data$num_dovetail_fragments / data$num_processed) * 100)
+  rownames(plot_data) <- rownames(data)
+  plot_data <- merge(x = plot_data, y = group, by = 0, all = F)
+  rownames(plot_data) <- plot_data[,1]
+  plot_data <- plot_data[,-1] #remove new row name column
+  plot_data$values <- as.numeric(plot_data$values)
+  if (nrow(data) > nrow(plot_data)) {
+    warning("Not all samples from 'data' have a value in 'group'")
+  }
+  if (is.null(binsize)) {
+    binsize <- diff(range(plot_data$values)) / 25
+  }
+  if (return_data) {
+    return(plot_data)
+  }
+  ggout_list <- hist_boxplot2(
     plot_data,
     binsize = binsize,
-    hist_fill = hist_fill,
+    colors = colors,
     hist_alpha = hist_alpha,
     box_fill = box_fill,
     box_alpha = box_alpha,
     box_lwd = box_lwd,
-    jitter_color = jitter_color,
     jitter_alpha = jitter_alpha,
     jitter_size = jitter_size,
     x_title = x_title,
-    y_title = y_title) 
+    y_title = y_title)
+  if (is.null(group0)) {
+    ggout_list$hist <- ggout_list$hist +
+      theme(legend.position = "none")
+    ggout_list$boxplot <- ggout_list$boxplot +
+      theme(legend.position = "none")
+  }
   return(ggout_list)
 }
 
@@ -1689,23 +1735,25 @@ plot_dovetail_mapping_rate <- function(data,
 #' Create a Salmon score-based filtering rate histogram and boxplot. The two plots are intended to 
 #' be used as a single column, two row figure panel.
 #' 
-#' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_salmon_mapping_pct
+#' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
+#'   mean of mean PHRED scores and grouping variable.
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
-#'   jittered boxplot respectively.
-#' @seealso \code{\link{load_paired_end_qc_data}} 
+#'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
+#'   data values and grouping variable.
+#' @seealso `\link{load_paired_end_qc_data}`
 #' @export
-plot_salmon_score_filtered_rate <- function(data,  
-                                            ids = NULL, 
+plot_salmon_score_filtered_rate <- function(data,
+                                            group = NULL,
+                                            ids = NULL,
                                             invert = F,
+                                            return_data = F,
                                             binsize = NULL,
-                                            hist_fill = "gray10",
+                                            colors = NULL,
                                             hist_alpha = 0.75,
                                             box_fill = "goldenrod",
                                             box_alpha = 0.5,
                                             box_lwd = 1,
-                                            jitter_color = "gray30",
                                             jitter_alpha = 0.75,
                                             jitter_size = 1.75,
                                             x_title = "% low-score filtered fragments",
@@ -1717,23 +1765,44 @@ plot_salmon_score_filtered_rate <- function(data,
       data <- data[rownames(data) %in% ids, , drop = F]
     }
   }
-  plot_data <- data.frame(percent = (data$num_fragments_filtered_vm / data$num_processed) * 100)
-  if (is.null(binsize)) {
-    binsize = diff(range(plot_data$percent)) / 25
+  group0 <- group
+  if (is.null(group)) {
+    group <- data.frame(group = factor(rep(1, nrow(data))))
+    rownames(group) <- rownames(data)
   }
-  ggout_list <- hist_boxplot(
+  plot_data <- data.frame(values = (data$num_fragments_filtered_vm / data$num_processed) * 100)
+  rownames(plot_data) <- rownames(data)
+  plot_data <- merge(x = plot_data, y = group, by = 0, all = F)
+  rownames(plot_data) <- plot_data[,1]
+  plot_data <- plot_data[,-1] #remove new row name column
+  plot_data$values <- as.numeric(plot_data$values)
+  if (nrow(data) > nrow(plot_data)) {
+    warning("Not all samples from 'data' have a value in 'group'")
+  }
+  if (is.null(binsize)) {
+    binsize <- diff(range(plot_data$values)) / 25
+  }
+  if (return_data) {
+    return(plot_data)
+  }
+  ggout_list <- hist_boxplot2(
     plot_data,
     binsize = binsize,
-    hist_fill = hist_fill,
+    colors = colors,
     hist_alpha = hist_alpha,
     box_fill = box_fill,
     box_alpha = box_alpha,
     box_lwd = box_lwd,
-    jitter_color = jitter_color,
     jitter_alpha = jitter_alpha,
     jitter_size = jitter_size,
     x_title = x_title,
-    y_title = y_title) 
+    y_title = y_title)
+  if (is.null(group0)) {
+    ggout_list$hist <- ggout_list$hist +
+      theme(legend.position = "none")
+    ggout_list$boxplot <- ggout_list$boxplot +
+      theme(legend.position = "none")
+  }
   return(ggout_list)
 }
 
@@ -1742,27 +1811,29 @@ plot_salmon_score_filtered_rate <- function(data,
 #' Create a Salmon failed mapping histogram and boxplot. The two plots are intended to be used as 
 #' a single column, two row figure panel.
 #' 
-#' @param data A data frame with Salmon mapping data in the same format as `salmon` returned by 
-#'   \code{\link{load_paired_end_qc_data}}.
 #' @inheritParams plot_salmon_mapping_pct
+#' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
+#'   mean of mean PHRED scores and grouping variable.
 #' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
-#'   jittered boxplot respectively.
-#' @seealso \code{\link{load_paired_end_qc_data}}
+#'   jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
+#'   data values and grouping variable.
+#' @seealso `\link{load_paired_end_qc_data}`
 #' @export
-plot_failed_mapping_count <- function(data,  
-                                      ids = NULL, 
-                                      invert = F,
-                                      binsize = NULL,
-                                      hist_fill = "gray10",
-                                      hist_alpha = 0.75,
-                                      box_fill = "goldenrod",
-                                      box_alpha = 0.5,
-                                      box_lwd = 1,
-                                      jitter_color = "gray30",
-                                      jitter_alpha = 0.75,
-                                      jitter_size = 1.75,
+plot_failed_mapping_count <- function(data,
+                                    group = NULL,
+                                    ids = NULL,
+                                    invert = F,
+                                    return_data = F,
+                                    binsize = NULL,
+                                    colors = NULL,
+                                    hist_alpha = 0.75,
+                                    box_fill = "goldenrod",
+                                    box_alpha = 0.5,
+                                    box_lwd = 1,
+                                    jitter_alpha = 0.75,
+                                    jitter_size = 1.75,
                                       x_title = "Number of failed mappings\nfor mapped fragments (millions)",
-                                      y_title = "Sample count"){
+                                    y_title = "Sample count"){
   if (! is.null(ids)) {
     if (invert) {
       data <- data[! rownames(data) %in% ids, , drop = F]
@@ -1770,24 +1841,45 @@ plot_failed_mapping_count <- function(data,
       data <- data[rownames(data) %in% ids, , drop = F]
     }
   }
-  failed_mappings <- data$num_alignments_below_threshold_for_mapped_fragments_vm
-  plot_data <- data.frame(count = failed_mappings / 1000000)
-  if (is.null(binsize)) {
-    binsize = diff(range(plot_data$count)) / 25
+  group0 <- group
+  if (is.null(group)) {
+    group <- data.frame(group = factor(rep(1, nrow(data))))
+    rownames(group) <- rownames(data)
   }
-  ggout_list <- hist_boxplot(
+  failed_mappings <- data$num_alignments_below_threshold_for_mapped_fragments_vm
+  plot_data <- data.frame(values = failed_mappings / 1000000)
+  rownames(plot_data) <- rownames(data)
+  plot_data <- merge(x = plot_data, y = group, by = 0, all = F)
+  rownames(plot_data) <- plot_data[,1]
+  plot_data <- plot_data[,-1] #remove new row name column
+  plot_data$values <- as.numeric(plot_data$values)
+  if (nrow(data) > nrow(plot_data)) {
+    warning("Not all samples from 'data' have a value in 'group'")
+  }
+  if (is.null(binsize)) {
+    binsize <- diff(range(plot_data$values)) / 25
+  }
+  if (return_data) {
+    return(plot_data)
+  }
+  ggout_list <- hist_boxplot2(
     plot_data,
     binsize = binsize,
-    hist_fill = hist_fill,
+    colors = colors,
     hist_alpha = hist_alpha,
     box_fill = box_fill,
     box_alpha = box_alpha,
     box_lwd = box_lwd,
-    jitter_color = jitter_color,
     jitter_alpha = jitter_alpha,
     jitter_size = jitter_size,
     x_title = x_title,
-    y_title = y_title) 
+    y_title = y_title)
+  if (is.null(group0)) {
+    ggout_list$hist <- ggout_list$hist +
+      theme(legend.position = "none")
+    ggout_list$boxplot <- ggout_list$boxplot +
+      theme(legend.position = "none")
+  }
   return(ggout_list)
 }
 
