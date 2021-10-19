@@ -1902,6 +1902,7 @@ plot_failed_mapping_count <- function(data,
 #'   that correspond to the plots for the transcriptome, decoys, dovetails, and filtered mappings
 #'   respectively.
 #' @seealso \code{\link{load_paired_end_qc_data}}
+#' @export
 plot_salmon_categories <- function(data,
                                    fill = brewer.pal(n = 4, name = "Spectral"),
                                    sort = F,
