@@ -163,7 +163,6 @@ ggpca <- function(data,
   pca <- prcomp(t(assay(data)[keeper_rows, ]), center = center, scale. = scale)
   pct_var <- pca$sdev ^ 2 / sum(pca$sdev ^ 2)
   if (is.null(group_var)) {
-    new_group_var <- "group"
     group_var_df <- data.frame(group = rep(1, ncol(data)))
     group <- factor(group_var_df$group)
   } else if (! all(group_var %in% names(colData(data)))) {
@@ -171,11 +170,9 @@ ggpca <- function(data,
   } else {
     if (length(group_var) > 1) {
       tmp_df <- as.data.frame(colData(data)[, group_var, drop = FALSE])
-      new_group_var <- "group"
       group_var_df <- data.frame(group = apply(tmp_df, 1, paste, collapse = ":"))
       group <- factor(group_var_df$group)
     } else {
-      new_group_var <- group_var
       group_var_df <- as.data.frame(colData(data)[, group_var, drop = FALSE])
       group <- group_var_df[, group_var]
     }
@@ -183,10 +180,10 @@ ggpca <- function(data,
   plot_data <- data.frame(
     pca$x[, pc_x], 
     pca$x[, pc_y],
-    group_var_df
+    group
   )
   rownames(plot_data) <- colnames(data)
-  colnames(plot_data) <- c(pc_x_name, pc_y_name, new_group_var)
+  colnames(plot_data) <- c(pc_x_name, pc_y_name, "group")
   if (return_data) {
     attr(plot_data, "pct_var") <- pct_var[c(pc_x, pc_y)]
     return(plot_data)
