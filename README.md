@@ -12,9 +12,9 @@ The most recent development version of this package can be installed using [`dev
 devtools::install_github("bryancquach/omixjutsu")
 ```
 
-To install a version from a specific commit use the `ref` option:
+To install a version from a specific commit or branch use the `ref` option:
 
 ```R
-# Replace <commit_id> with the desired commit ID (i.e., the SHA hash)
-devtools::install_github("bryancquach/omixjutsu", ref = "<commit_id>")
+# Replace <id> with the desired commit ID (i.e., the SHA hash) or repository branch
+devtools::install_github("bryancquach/omixjutsu", ref = "<id>")
 ```
