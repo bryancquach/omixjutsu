@@ -2,7 +2,7 @@
 % Please edit documentation in R/gencode_utils.R
 \name{make_gencode_gene_id_map}
 \alias{make_gencode_gene_id_map}
-\title{Create GENCODE ID to gene name mapping.}
+\title{Create GENCODE ID to gene name mapping}
 \usage{
 make_gencode_gene_id_map(gtf_file, output_file = NULL)
 }
