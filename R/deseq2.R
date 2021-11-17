@@ -1,6 +1,5 @@
-#' Tools for differential gene expression (DGE) analysis using DESeq2.
-#'
-#' Author: Bryan Quach (bryancquach@gmail.com)
+# Tools for differential gene expression (DGE) analysis using DESeq2.
+# Author: Bryan Quach (bryancquach@gmail.com)
 
 #' Merge tximport objects
 #'

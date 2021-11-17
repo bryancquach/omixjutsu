@@ -1,6 +1,5 @@
-#' Convenience functions for working with tabular data
-#'
-#' Author: Bryan Quach (bryancquach@gmail.com)
+# Convenience functions for working with tabular data
+# Author: Bryan Quach (bryancquach@gmail.com)
 
 #' Detect samples above a specified cutoff value
 #'
