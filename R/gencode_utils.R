@@ -1,5 +1,5 @@
 # Collection of functions for GENCODE data munging
-# Author: Bryan Quach (bquach@rti.org)
+# Author: Bryan Quach (bryancquach@gmail.com)
 
 #' Subset GENCODE GTF to specific features
 #'
@@ -121,7 +121,7 @@ get_gencode_chr_y_gene_ids <- function(gtf, exclude_par = F){
   return(chr_y_ids)
 }
 
-#' Create GENCODE ID to gene name mapping.
+#' Create GENCODE ID to gene name mapping
 #'
 #' Creates a GENCODE ID to gene name mapping using a GTF file.
 #'

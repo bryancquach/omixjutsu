@@ -1,5 +1,5 @@
 # Tools for munging and visualizing QC metrics for RNA-seq data.
-# Author: Bryan Quach
+# Author: Bryan Quach (bryancquach@gmail.com)
 
 #' Load QC metrics data from paired-end RNA-seq processing 
 #' 
@@ -3089,7 +3089,7 @@ plot_gene_mapping_rate <- function(data,
     }
   }
   colnames(data) <- c("exonic", "intronic")
-  mapping_pct <- (data$exonic / data$intronic) * 100
+  mapping_pct <- (data$exonic + data$intronic)
   group0 <- group
   if (is.null(group)) {
     group <- data.frame(group = factor(rep(1, nrow(data))))
