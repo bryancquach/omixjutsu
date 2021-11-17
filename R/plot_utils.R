@@ -1,5 +1,5 @@
 # Generic convenience functions for plotting and plot data munging
-# Created by: Bryan Quach (bquach@rti.org)
+# Created by: Bryan Quach (bryancquach@gmail.com)
 
 #' Histogram and jittered boxplot
 #'
@@ -283,7 +283,7 @@ hist_boxplot2 <- function(data,
                           jitter_alpha = 0.75,
                           jitter_size = 1.75,
                           x_title = "",
-                          y_title = ""){
+                          y_title = "") {
   colnames(data) <- c("value", "group")
   ggout_list <- list()
   data_min <- min(data$value, na.rm = T)
@@ -370,3 +370,136 @@ hist_boxplot2 <- function(data,
   return(ggout_list)
 }
 
+#' Plot p-value histogram
+#'
+#' Plot p-value histogram.
+#'
+#' @param pvalues A vector of pvalues.
+#' @param bin_width Size of each histogram bin.
+#' @param bin_fill Bin fill color.
+#' @param alpha Bin fill color alpha value.
+#' @return A ggplot object.
+#' @export
+pval_histogram <- function(pvalues, bin_width = 0.025, bin_fill = "gray10", alpha = 0.8){
+  plot_data <- data.frame(pvalue = pvalues)
+  output_plot <- ggplot(plot_data, aes(x = pvalue)) +
+    geom_histogram(
+      position = "identity",
+      binwidth = bin_width,
+      alpha = alpha,
+      color = "white",
+      fill = bin_fill
+    ) +
+    xlim(0, 1) +
+    labs(y = "Frequency", x = "p-value") +
+    theme(
+        plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+        title = element_text(size = 18),
+        axis.text = element_text(size = 18),
+        axis.title = element_text(size = 18),
+        axis.title.y = element_text(vjust = 3),
+        axis.title.x = element_text(vjust = -1)
+    )
+  return(output_plot)
+}
+
+#' Quantile-quantile plot
+#'
+#' Plots observed vs. expected p-values.
+#'
+#' Plot observed p-values vs. expected p-values. Expected p-values are assumed to follow a
+#' uniform distribution. 
+#'
+#' @param pvalues A vector of pvalues with associated feature IDs.
+#' @param outliers A vector of outlier IDs that correspond to the names in 'pvalues'.
+#' @param sig_cutoff Adjusted p-value significance threshold.
+#' @param plot_lambda If 'TRUE' calculate the genomic inflation factor and overlay it on the plot.
+#' @param df Degrees of freedom on the theoretical distribution. Used in calculating the genomic 
+#'   inflation factor. Only relevant when `plot_lambda` is 'TRUE'.
+#' @return A ggplot object.
+#' @export
+pval_qqplot <- function (pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambda = T, df = 1) {
+  if(! all(outliers %in% names(pvalues))) {
+    warnings("Not all outliers present in 'pvalues'")
+  }
+  plot_data <- data.frame(
+    pvalues = pvalues,
+    log_p = -log10(pvalues),
+    is_outlier = (names(pvalues) %in% outliers)
+  )
+  sorted_p <- sort(plot_data$pvalues[which(! plot_data$is_outlier)])
+  if (plot_lambda) {
+    lambda <- qchisq(median(sorted_p), df, lower.tail = F) / qchisq(0.5, df, lower.tail = F)
+    lambda <- round(lambda, 3)
+  }
+  keepers <- which(plot_data$log_p < Inf & (! plot_data$is_outlier))
+  plot_data <- plot_data[keepers, , drop = F]
+  plot_data <- plot_data[order(plot_data$log_p, decreasing = T), ]
+  num_pvals <- nrow(plot_data)
+  plot_data$expected_log_p <- -log10((1:num_pvals) / (num_pvals + 1))
+  plot_data$ci_lower <- -log10(
+    qbeta(
+      sig_cutoff / 2,
+      1:num_pvals,
+      (num_pvals + 1) - (1:num_pvals)
+    )
+  )
+  plot_data$ci_upper <- -log10(
+    qbeta(
+      1 - (sig_cutoff / 2),
+      1:num_pvals,
+      (num_pvals + 1) - (1:num_pvals))
+  )
+  plot_data$ci_expected <- -log10(((1:num_pvals) - 0.5) / num_pvals)
+  xy_max <- max(plot_data$expected_log_p, plot_data$log_p) + 1
+  output_plot <- ggplot(plot_data, aes(x = expected_log_p, y = log_p)) +
+    geom_abline(
+      intercept = 0,
+      slope = 1,
+      linetype = "solid",
+      size = 1.5,
+      color = "red3",
+      alpha = 0.75
+    ) +
+    geom_point(size = 2, shape = 16, color = "gray30", alpha = 0.75) +
+    geom_line(
+      aes(x = ci_expected, y = ci_lower),
+      size = 1.5,
+      linetype = "dashed",
+      color = "gray60",
+      alpha = 0.75
+    ) +
+    geom_line(
+      aes(x = ci_expected, y = ci_upper),
+      size = 1.5,
+      linetype = "dashed",
+      color = "gray60",
+      alpha = 0.75
+    ) +
+    xlim(0, xy_max) +
+    ylim(0, xy_max) +
+    labs(
+      x = expression(-log~""["10"]~"(Expected p-value)"),
+      y = expression(-log~""["10"]~"(Observed p-value)")
+    ) +
+    theme(
+      plot.margin = unit(c(0.5, 0.5, 0.5, 1), "cm"),
+      legend.position = "none",
+      title = element_text(size = 18),
+      axis.text = element_text(size = 18),
+      axis.title = element_text(size = 18),
+      axis.title.y = element_text(vjust = 3),
+      axis.title.x = element_text(vjust = -1)
+    )
+  if (plot_lambda) {
+    output_plot +
+      annotate(
+        "text",
+        x = xy_max - 1,
+        y = 0,
+        label = bquote(paste(lambda, " = ", .(lambda))),
+        size = 6
+      )
+  }
+  return(output_plot)
+}
