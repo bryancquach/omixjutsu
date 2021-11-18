@@ -4,7 +4,10 @@
 \alias{ihw_diagnostic_plots}
 \title{IHW diagnostic plots}
 \usage{
-ihw_diagnostic_plots(ihw_data, num_strata = nlevels(groups_factor(ihw_data)))
+ihw_diagnostic_plots(
+  ihw_data,
+  num_strata = nlevels(IHW::groups_factor(ihw_data))
+)
 }
 \arguments{
 \item{ihw_data}{An ihwResult object.}

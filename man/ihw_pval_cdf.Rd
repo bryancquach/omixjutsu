@@ -4,7 +4,7 @@
 \alias{ihw_pval_cdf}
 \title{Stratified p-value eCDFs}
 \usage{
-ihw_pval_cdf(ihw_data, num_strata = nlevels(groups_factor(ihw_data)))
+ihw_pval_cdf(ihw_data, num_strata = nlevels(IHW::groups_factor(ihw_data)))
 }
 \arguments{
 \item{ihw_data}{An ihwResult object.}

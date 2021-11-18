@@ -68,7 +68,8 @@ Create an intergenic-intronic mapping proportion histogram and boxplot.
 \details{
 Calculates the ratio between intergenic and intronic mapping rates and plots this as a histogram
 and boxplot. The two plots are intended to be used as a single column, two row figure panel. The
-intergenic and intronic mapping rates can be calculated uing \code{\link{plot_mapping_categories}}.
+intergenic and intronic mapping rates can be calculated uing
+\code{\link{plot_mapping_categories}}.
 }
 \seealso{
 \code{\link{plot_mapping_categories}} \code{\link{hist_boxplot2}}

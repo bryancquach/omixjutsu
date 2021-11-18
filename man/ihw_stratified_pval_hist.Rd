@@ -6,7 +6,7 @@
 \usage{
 ihw_stratified_pval_hist(
   ihw_data,
-  num_strata = nlevels(groups_factor(ihw_data)),
+  num_strata = nlevels(IHW::groups_factor(ihw_data)),
   fill_color = "gray20",
   fill_alpha = 1
 )

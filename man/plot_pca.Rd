@@ -71,5 +71,6 @@ user-specified eigenvectors (ie., principal components or PCs) from the eigenvec
 points can be optionally color-coded based on a user-specified variable.
 }
 \seealso{
-\code{\link{prcomp}} \code{\link{SummarizedExperiment}} \code{\link{assay}} \code{\link{colData}}
+\code{\link{prcomp}}, \code{\link{SummarizedExperiment}}, \code{\link{assay}},
+\code{\link{colData}}
 }

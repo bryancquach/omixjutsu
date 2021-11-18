@@ -19,8 +19,8 @@ filter_dds_features(
 \item{count_cutoff}{The minimum number of counts required for a feature for greater than
 \code{min_sample_fraction} proportion of samples to retain the feature.}
 
-\item{min_sample_fraction}{The minimum proportion of samples with greater than \code{count_cutoff} counts
-to retain a feature.}
+\item{min_sample_fraction}{The minimum proportion of samples with greater than \code{count_cutoff}
+counts to retain a feature.}
 
 \item{threshold_variable}{Name of the binary variable to use for calculating sample fractions.}
 

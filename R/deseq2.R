@@ -4,16 +4,16 @@
 #' Merge tximport objects
 #'
 #' Combines multiple tximport objects into a single tximport object.
-#' 
+#'
 #' Merges tximport objects to create a single tximport object with a common subset of genes across
 #' all of the input objects. Also creates a categorical variable to distinguish the source object
 #' of each sample. Requires all row and sample names to be unique.
 #'
 #' @param txi_list A list where each element is a tximport object.
 #' @return A list with the following components:
-#'   * `txi` A tximport object.
-#'   * `sample_source` A categorical variable for each sample that corresponds to the source 
-#'     tximport object for the sample.
+#' * `txi` A tximport object.
+#' * `sample_source` A categorical variable for each sample that corresponds to the source
+#' tximport object for the sample.
 #' @export
 merge_txi <- function(txi_list) {
   txi_data <- list(txi = NULL, sample_source = NULL)
@@ -87,7 +87,7 @@ merge_txi <- function(txi_list) {
       return(length(ids) == length(unique(ids)))
     }
   )
-  if (! all(unlist(are_unique_ids))) {
+  if (!all(unlist(are_unique_ids))) {
     stop("Error: Row names in 'counts' must all be unique")
   }
   feature_freq <- table(unlist(feature_names_list))
@@ -117,7 +117,7 @@ merge_txi <- function(txi_list) {
       return(length(ids) == length(unique(ids)))
     }
   )
-  if (! all(unlist(are_unique_ids))) {
+  if (!all(unlist(are_unique_ids))) {
     stop("Error: Row names in 'abundance' must all be unique")
   }
   feature_freq <- table(unlist(feature_names_list))
@@ -147,7 +147,7 @@ merge_txi <- function(txi_list) {
       return(length(ids) == length(unique(ids)))
     }
   )
-  if (! all(unlist(are_unique_ids))) {
+  if (!all(unlist(are_unique_ids))) {
     stop("Error: Row names in 'length' must all be unique")
   }
   feature_freq <- table(unlist(feature_names_list))
@@ -173,7 +173,7 @@ merge_txi <- function(txi_list) {
     simplify = F
   )
   sample_labels <- sapply(
-    1:length(txi_num_samples),
+    seq_len(length(txi_num_samples)),
     function(label) {
       rep(x = label, times = txi_num_samples[[label]])
     }
@@ -190,7 +190,7 @@ merge_txi <- function(txi_list) {
   txi_data$sample_source <- sample_labels
   names(txi_data$sample_source) <- colnames(txi_data$txi$counts)
   return(txi_data)
-}  
+}
 
 #' Subsets the tables of a tximport object
 #'
@@ -205,16 +205,16 @@ merge_txi <- function(txi_list) {
 #' @param dimensions The dimenions to subset. `1` for rows and `2` for columns.
 #' @return A tximport object.
 #' @export
-subset_txi <- function(txi, ids, dimension){
-  if (! dimension %in% c(1,2)) {
-      stop("Error: 'dimension' must be '1' (row) or '2' (column)")
+subset_txi <- function(txi, ids, dimension) {
+  if (!dimension %in% c(1, 2)) {
+    stop("Error: 'dimension' must be '1' (row) or '2' (column)")
   }
   index <- ids
-  if (is.factor(index)){
+  if (is.factor(index)) {
     index <- as.character(index)
   }
   if (is.character(index)) {
-    if (dimension == 1){
+    if (dimension == 1) {
       if (sum(rownames(txi$counts) %in% index) != length(index)) {
         stop("IDs missing from txi object")
       }
@@ -249,12 +249,12 @@ subset_txi <- function(txi, ids, dimension){
 #'
 #' @param dds The DDS object from which to filter features.
 #' @param count_cutoff The minimum number of counts required for a feature for greater than
-#'     `min_sample_fraction` proportion of samples to retain the feature.
-#' @param min_sample_fraction The minimum proportion of samples with greater than `count_cutoff` counts
-#'     to retain a feature.
+#' `min_sample_fraction` proportion of samples to retain the feature.
+#' @param min_sample_fraction The minimum proportion of samples with greater than `count_cutoff`
+#' counts to retain a feature.
 #' @param threshold_variable Name of the binary variable to use for calculating sample fractions.
 #' @param use_min_fraction If `TRUE`, uses the smaller of the sample fractions calculated from the
-#'     `threshold_variable`. Otherwise uses the larger of the sample fractions.
+#' `threshold_variable`. Otherwise uses the larger of the sample fractions.
 #' @param approximate If `TRUE`, round `min_sample_fraction` to a whole number ending in '0' or '5'.
 #' @return A DDS object.
 #' @export
@@ -268,7 +268,7 @@ filter_dds_features <- function(dds,
     stop("Error: either 'min_sample_fraction' or 'threshold_variable' must not be NULL")
   }
   count_matrix <- DESeq2::counts(dds, normalized = F)
-  if (! is.null(min_sample_fraction)) {
+  if (!is.null(min_sample_fraction)) {
     sample_cutoff <- min_sample_fraction
     if (approximate) {
       floored_percent <- floor(sample_cutoff * 100)
@@ -283,7 +283,7 @@ filter_dds_features <- function(dds,
     keep_index <- which(fraction_samples_passed > sample_cutoff)
     return(dds[keep_index, ])
   } else {
-    pheno_data <- colData(dds)
+    pheno_data <- SummarizedExperiment::colData(dds)
     variable_freq <- table(pheno_data[, threshold_variable])
     variable_fraction <- variable_freq / nrow(pheno_data)
     if (use_min_fraction) {
@@ -310,7 +310,7 @@ filter_dds_features <- function(dds,
 #'
 #' Determine Cook's distance outlier cutoff value.
 #'
-#' Uses differential expression regression model design to specify an F distribution and calculate 
+#' Uses differential expression regression model design to specify an F distribution and calculate
 #' a value that equates to the user-specified F distribution percentile. This value can be used as
 #' a Cook's distance cutoff above which features would be considered outliers.
 #'
@@ -325,7 +325,7 @@ get_cooks_cutoff <- function(dds_fit, f_threshold = 99) {
   }
   f_threshold <- f_threshold / 100
   m <- ncol(dds_fit)
-  p <- ncol(model.matrix(design(dds_fit), colData(dds_fit))) - 1
+  p <- ncol(model.matrix(DESeq2::design(dds_fit), SummarizedExperiment::colData(dds_fit))) - 1
   cooks_cutoff <- qf(f_threshold, p, m - p)
   return(cooks_cutoff)
 }
@@ -334,10 +334,10 @@ get_cooks_cutoff <- function(dds_fit, f_threshold = 99) {
 #'
 #' Flag expression features as outliers based on Cook's distance.
 #'
-#' Uses differential expression regression model design to specify an F distribution and calculate 
-#' a value that equates to the user-specified F distribution percentile. This value is used as a 
-#' Cook's distance cutoff above which features are considered outliers. Since a Cook's distance 
-#' value is calculated for every feature and sample, the max Cook's distance value across 
+#' Uses differential expression regression model design to specify an F distribution and calculate
+#' a value that equates to the user-specified F distribution percentile. This value is used as a
+#' Cook's distance cutoff above which features are considered outliers. Since a Cook's distance
+#' value is calculated for every feature and sample, the max Cook's distance value across
 #' samples for each feature is used to call outliers.
 #'
 #' @inheritParams get_cooks_cutoff
@@ -348,7 +348,7 @@ get_cooks_outliers <- function(dds_fit, f_threshold = 99) {
   if (f_threshold > 100 | f_threshold < 0) {
     stop("Error: 'f_threshold' must be between 0 and 100")
   }
-  max_cooks <- apply(assays(dds_fit)[["cooks"]], 1, max)
+  max_cooks <- apply(SummarizedExperiment::assays(dds_fit)[["cooks"]], 1, max)
   cooks_cutoff <- get_cooks_cutoff(dds_fit, f_threshold)
   is_outlier <- (max_cooks > cooks_cutoff)
   names(is_outlier) <- rownames(dds_fit)
@@ -359,7 +359,7 @@ get_cooks_outliers <- function(dds_fit, f_threshold = 99) {
 #'
 #' Visualizes Cook's distance distribution summary stats across all features for a sample.
 #'
-#' Uses Cook's distance values across all features and samples to create a plot with the 25th, 
+#' Uses Cook's distance values across all features and samples to create a plot with the 25th,
 #' 50th, and 75th percentiles of the Cook's distance distrubtion for each sample.
 #'
 #' @param dds_fit A DESeqDataSet object after model fitting.
@@ -375,7 +375,7 @@ plot_cooks_per_sample <- function(dds_fit,
                                   point_alpha = 1,
                                   cooks_cutoff = NULL,
                                   y_lim = NULL) {
-  cooks_mat <- log10(assays(dds_fit)[["cooks"]])
+  cooks_mat <- log10(SummarizedExperiment::assays(dds_fit)[["cooks"]])
   plot_data <- apply(
     cooks_mat,
     2,
@@ -387,16 +387,19 @@ plot_cooks_per_sample <- function(dds_fit,
   )
   plot_data <- as.data.frame(t(plot_data))
   plot_data <- plot_data[order(plot_data$median), ]
-  plot_data$x <- 1:nrow(plot_data)
-  plot_data <- melt(plot_data, measure.vars = c("lower_quartile", "median", "upper_quartile"))
+  plot_data$x <- seq_len(nrow(plot_data))
+  plot_data <- reshape2::melt(
+    plot_data,
+    measure.vars = c("lower_quartile", "median", "upper_quartile")
+  )
   plot_data$variable <- factor(
     plot_data$variable,
     levels = c("upper_quartile", "median", "lower_quartile")
   )
   output_plot <- ggplot(
-      plot_data,
-      aes(x = x, y = value, shape = variable, col = variable, fill = variable)
-    ) +
+    plot_data,
+    aes(x = x, y = value, shape = variable, col = variable, fill = variable)
+  ) +
     geom_point(size = point_size, alpha = point_alpha) +
     scale_shape_manual(values = c(24, 21, 25)) +
     scale_fill_manual(values = c("red3", "gray20", "steelblue3")) +
@@ -414,7 +417,7 @@ plot_cooks_per_sample <- function(dds_fit,
       axis.title.y = element_text(vjust = 3),
       axis.title.x = element_text(vjust = -1)
     )
-  if (! is.null(cooks_cutoff)) {
+  if (!is.null(cooks_cutoff)) {
     output_plot <- output_plot +
       geom_hline(
         yintercept = log10(cooks_cutoff),
@@ -424,7 +427,7 @@ plot_cooks_per_sample <- function(dds_fit,
         size = 1.5
       )
   }
-  if (! is.null(y_lim)) {
+  if (!is.null(y_lim)) {
     output_plot <- output_plot +
       ylim(y_lim)
   }
@@ -435,7 +438,7 @@ plot_cooks_per_sample <- function(dds_fit,
 #'
 #' Plot max Cook's distances per feature vs. Wald statistic rankings.
 #'
-#' Obtains the max Cook's distance for a feature across all samples and compares it to the Wald 
+#' Obtains the max Cook's distance for a feature across all samples and compares it to the Wald
 #' statistic derived from the statistical test for differential expression. Extreme Cook's
 #' distance values are truncated to the y-axis upper limit to aid with visualization.
 #'
@@ -452,18 +455,18 @@ plot_cooks_vs_wald <- function(dds_fit,
                                f_threshold = 99,
                                point_size = 3,
                                point_color = "gray30",
-                               point_alpha = 0.5){
+                               point_alpha = 0.5) {
   if (f_threshold > 100 | f_threshold < 0) {
     stop("Error: 'f_threshold' must be between 0 and 100")
   }
   f_threshold <- f_threshold / 100
-  max_cooks <- apply(assays(dds_fit)[["cooks"]], 1, max)
+  max_cooks <- apply(SummarizedExperiment::assays(dds_fit)[["cooks"]], 1, max)
   m <- ncol(dds_fit)
-  p <- ncol(model.matrix(design(dds_fit), colData(dds_fit))) - 1
+  p <- ncol(model.matrix(DESeq2::design(dds_fit), SummarizedExperiment::colData(dds_fit))) - 1
   cooks_cutoff <- qf(f_threshold, p, m - p)
   initial_wald_stat <- dds_results$stat
-  initial_max_cooks <- apply(assays(dds_fit)[["cooks"]], 1, max)
-  not_na <- (! is.na(initial_wald_stat))
+  initial_max_cooks <- apply(SummarizedExperiment::assays(dds_fit)[["cooks"]], 1, max)
+  not_na <- (!is.na(initial_wald_stat))
   wald_stat <- initial_wald_stat[not_na]
   max_cooks <- initial_max_cooks[not_na]
   # Identify and truncate extreme Cook's distance values
@@ -520,13 +523,13 @@ plot_cooks_vs_wald <- function(dds_fit,
 }
 
 #' P-value histogram for outlier features
-#' 
+#'
 #' Plot p-value histogram for Cook's distance-based feature outliers.
 #'
 #' Obtains differential expression test p-values for features flagged as outliers based on a
 #' Cook's distance cutoff derived from the user-specified `f_threshold`. The F distribution that
-#' corresponds to `f_threshold` is parameterized by the differential exppression regression model 
-#' design. 
+#' corresponds to `f_threshold` is parameterized by the differential exppression regression model
+#' design.
 #'
 #' @param dds_fit A DESeqDataSet object after model fitting.
 #' @param dds_results A DESeqResults object derived from `dds_fit`.
@@ -536,17 +539,17 @@ plot_cooks_vs_wald <- function(dds_fit,
 #' @return A ggplot object.
 #' @export
 cooks_outlier_pval_histogram <- function(dds_fit,
-                                         dds_results, 
-                                         f_threshold = 99, 
-                                         fill_color = "gray30", 
+                                         dds_results,
+                                         f_threshold = 99,
+                                         fill_color = "gray30",
                                          fill_alpha = 1) {
   if (f_threshold > 100 | f_threshold < 0) {
     stop("Error: 'f_threshold' must be between 0 and 100")
   }
   f_threshold <- f_threshold / 100
-  max_cooks <- apply(assays(dds_fit)[["cooks"]], 1, max)
+  max_cooks <- apply(SummarizedExperiment::assays(dds_fit)[["cooks"]], 1, max)
   m <- ncol(dds_fit)
-  p <- ncol(model.matrix(design(dds_fit), colData(dds_fit))) - 1
+  p <- ncol(model.matrix(DESeq2::design(dds_fit), SummarizedExperiment::colData(dds_fit))) - 1
   cooks_cutoff <- qf(f_threshold, p, m - p)
   is_outlier <- (max_cooks > cooks_cutoff)
   plot_data <- data.frame(pvalue = NA)
@@ -563,12 +566,12 @@ cooks_outlier_pval_histogram <- function(dds_fit,
     ) +
     labs(title = "Cook's distance outliers", x = "-log10(p)", y = "Frequency") +
     theme(
-        plot.margin = unit(c(0.5, 0.5, 0.5, 1), "cm"),
-        title = element_text(size = 18),
-        axis.text = element_text(size = 18),
-        axis.title = element_text(size = 18),
-        axis.title.y = element_text(vjust = 3),
-        axis.title.x = element_text(vjust = -1)
+      plot.margin = unit(c(0.5, 0.5, 0.5, 1), "cm"),
+      title = element_text(size = 18),
+      axis.text = element_text(size = 18),
+      axis.title = element_text(size = 18),
+      axis.title.y = element_text(vjust = 3),
+      axis.title.x = element_text(vjust = -1)
     )
   return(output_plot)
 }
@@ -606,7 +609,7 @@ ma_plot <- function(dds_results,
                     sig_size = 3,
                     nonsig_size = 2,
                     outlier_size = sig_size * 2.5) {
-  if (! all(outliers %in% rownames(dds_results))) {
+  if (!all(outliers %in% rownames(dds_results))) {
     warnings("Not all outliers present in 'dds_results'")
   }
   plot_data <- data.frame(
@@ -633,38 +636,42 @@ ma_plot <- function(dds_results,
   output_plot <- ggplot(plot_data, aes(x = expression, y = fold_change)) +
     geom_point(
       data = function(x) {
-        return(x[x$sig_class == "nonsignificant",])
+        return(x[x$sig_class == "nonsignificant", ])
       },
       shape = 16,
       col = nonsig_color,
       size = nonsig_size,
-      alpha = nonsig_alpha) +
+      alpha = nonsig_alpha
+    ) +
     geom_point(
       data = function(x) {
-        return(x[x$sig_class == "up",])
+        return(x[x$sig_class == "up", ])
       },
       shape = 24,
       col = sig_up_color,
       fill = sig_up_color,
       size = sig_size,
-      alpha = sig_alpha) +
+      alpha = sig_alpha
+    ) +
     geom_point(
       data = function(x) {
-        return(x[x$sig_class == "down",])
+        return(x[x$sig_class == "down", ])
       },
       shape = 25,
       col = sig_down_color,
       fill = sig_down_color,
       size = sig_size,
-      alpha = sig_alpha) +
+      alpha = sig_alpha
+    ) +
     geom_point(
       data = function(x) {
-        return(x[x$sig_class == "outlier",])
+        return(x[x$sig_class == "outlier", ])
       },
       shape = "*",
       col = outlier_color,
       size = outlier_size,
-      alpha = sig_alpha) +
+      alpha = sig_alpha
+    ) +
     geom_hline(yintercept = 0, linetype = "solid", size = 1, color = "gray20", alpha = 0.75) +
     ylim(-1 * y_max, y_max) +
     labs(y = "log2(fold change)", x = "log10(mean expression)") +
@@ -700,7 +707,7 @@ volcano_plot <- function(dds_results,
                          sig_size = 3,
                          nonsig_size = 2,
                          outlier_size = sig_size * 2.5) {
-  if (! all(outliers %in% rownames(dds_results))) {
+  if (!all(outliers %in% rownames(dds_results))) {
     warnings("Not all outliers present in 'dds_results'")
   }
   plot_data <- data.frame(
@@ -726,39 +733,43 @@ volcano_plot <- function(dds_results,
   x_max <- max(plot_data$fold_change) * 1.1
   output_plot <- ggplot(plot_data, aes(x = fold_change, y = log_p)) +
     geom_point(
-      data = function(x){
-        return(x[x$sig_class == "nonsignificant",])
+      data = function(x) {
+        return(x[x$sig_class == "nonsignificant", ])
       },
       shape = 16,
       col = nonsig_color,
       size = nonsig_size,
-      alpha = nonsig_alpha) +
+      alpha = nonsig_alpha
+    ) +
     geom_point(
-      data = function(x){
-        return(x[x$sig_class == "up",])
+      data = function(x) {
+        return(x[x$sig_class == "up", ])
       },
       shape = 24,
       col = sig_up_color,
       fill = sig_up_color,
       size = sig_size,
-      alpha = sig_alpha) +
+      alpha = sig_alpha
+    ) +
     geom_point(
-      data = function(x){
-        return(x[x$sig_class == "down",])
+      data = function(x) {
+        return(x[x$sig_class == "down", ])
       },
       shape = 25,
       col = sig_down_color,
       fill = sig_down_color,
       size = sig_size,
-      alpha = sig_alpha) +
+      alpha = sig_alpha
+    ) +
     geom_point(
-      data = function(x){
-        return(x[x$sig_class == "outlier",])
+      data = function(x) {
+        return(x[x$sig_class == "outlier", ])
       },
       shape = "*",
       col = outlier_color,
       size = outlier_size,
-      alpha = sig_alpha) +
+      alpha = sig_alpha
+    ) +
     geom_vline(xintercept = 0, linetype = "solid", size = 1, color = "gray20", alpha = 0.75) +
     xlim(-1 * x_max, x_max) +
     labs(y = "-log10(p)", x = "log2(fold change)") +
@@ -790,7 +801,7 @@ per_sample_count_distribution <- function(dds,
                                           point_size = 2.5,
                                           point_alpha = 1,
                                           y_lim = NULL) {
-  log_counts <- log10(counts(dds, normalized = normalized) + 1)
+  log_counts <- log10(DESeq2::counts(dds, normalized = normalized) + 1)
   plot_data <- apply(
     log_counts,
     2,
@@ -802,16 +813,19 @@ per_sample_count_distribution <- function(dds,
   )
   plot_data <- as.data.frame(t(plot_data))
   plot_data <- plot_data[order(plot_data$median), ]
-  plot_data$x <- 1:nrow(plot_data)
-  plot_data <- melt(plot_data, measure.vars = c("lower_quartile", "median", "upper_quartile"))
+  plot_data$x <- seq_len(nrow(plot_data))
+  plot_data <- reshape2::melt(
+    plot_data,
+    measure.vars = c("lower_quartile", "median", "upper_quartile")
+  )
   plot_data$variable <- factor(
     plot_data$variable,
     levels = c("upper_quartile", "median", "lower_quartile")
   )
   output_plot <- ggplot(
-      plot_data,
-      aes(x = x, y = value, shape = variable, col = variable, fill = variable)
-    ) +
+    plot_data,
+    aes(x = x, y = value, shape = variable, col = variable, fill = variable)
+  ) +
     geom_point(size = point_size, alpha = point_alpha) +
     scale_shape_manual(values = c(24, 21, 25)) +
     scale_fill_manual(values = c("red3", "gray20", "steelblue3")) +
@@ -829,9 +843,8 @@ per_sample_count_distribution <- function(dds,
       axis.title.y = element_text(vjust = 3),
       axis.title.x = element_text(vjust = -1)
     )
-  if (! is.null(y_lim)) {
+  if (!is.null(y_lim)) {
     output_plot <- output_plot + ylim(y_lim)
   }
   return(output_plot)
 }
-

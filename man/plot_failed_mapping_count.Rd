@@ -18,7 +18,8 @@ plot_failed_mapping_count(
   box_lwd = 1,
   jitter_alpha = 0.75,
   jitter_size = 1.75,
-  x_title = "Number of failed mappings\\nfor mapped fragments (millions)",
+  x_title = paste0(c("Number of failed mappings", "for mapped fragments (millions)"),
+    collapse = "\\n"),
   y_title = "Sample count"
 )
 }

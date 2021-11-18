@@ -11,8 +11,8 @@
 #' variables.
 #'
 #' @param ihw_data An ihwResult object.
-#' @param truncate_y If 'TRUE', remove -log10 p-value outliers from the plot (exceed 1.5*IQR above 
-#'   the third quartile).
+#' @param truncate_y If 'TRUE', remove -log10 p-value outliers from the plot (exceed 1.5*IQR above
+#' the third quartile).
 #' @param point_color Scatterplot point fill color.
 #' @param point_alpha Scatterplot point fill color alpha value.
 #' @param point_size Scatterplot point size.
@@ -35,7 +35,7 @@ ihw_pval_scatter <- function(ihw_data,
     geom_point(col = point_color, alpha = point_alpha, size = point_size) +
     labs(x = "Variable rank by increasing value", y = "-log10(p)") +
     theme(
-      plot.margin = unit(c(0.5,0.5,0.5,1), units = "cm"),
+      plot.margin = unit(c(0.5, 0.5, 0.5, 1), units = "cm"),
       title = element_text(size = 18),
       axis.text = element_text(size = 18),
       axis.title = element_text(size = 18),
@@ -49,7 +49,7 @@ ihw_pval_scatter <- function(ihw_data,
 #'
 #' Plot p-value density distribution for IHW variable strata.
 #'
-#' This plot partitions the p-values by quantiles of the IHW variable to generate multiple p-value 
+#' This plot partitions the p-values by quantiles of the IHW variable to generate multiple p-value
 #' density distributions. For an informative IHW variable, the larger the quantile ID (strata) the
 #' more skew there should be towards enrichment of smaller p-values.
 #'
@@ -88,7 +88,7 @@ ihw_pval_ridges <- function(ihw_data, num_quantiles = 10, fill_color = "gray70",
 #'
 #' Plot p-value histograms for IHW variable strata.
 #'
-#' This plot partitions the p-values into equal sized strata of the IHW variable to generate 
+#' This plot partitions the p-values into equal sized strata of the IHW variable to generate
 #' multiple p-value histograms. For an informative IHW variable, the larger the stratum ID the
 #' more skew there should be towards enrichment of smaller p-values.
 #'
@@ -100,18 +100,18 @@ ihw_pval_ridges <- function(ihw_data, num_quantiles = 10, fill_color = "gray70",
 #' @family ihw
 #' @export
 ihw_stratified_pval_hist <- function(ihw_data,
-                                     num_strata = nlevels(groups_factor(ihw_data)),
+                                     num_strata = nlevels(IHW::groups_factor(ihw_data)),
                                      fill_color = "gray20",
                                      fill_alpha = 1) {
   ihw_table <- as.data.frame(ihw_data)
-  ihw_table$stratum <- groups_by_filter(ihw_table$covariate, nbins = num_strata)
+  ihw_table$stratum <- IHW::groups_by_filter(ihw_table$covariate, nbins = num_strata)
   output_plot <- ggplot(ihw_table, aes(x = pvalue)) +
     labs(title = "Stratified p-value histograms", x = "p-value", y = "Frequency") +
     geom_histogram(
-      binwidth = 0.05, 
-      boundary = 0, 
-      color = "white", 
-      fill = fill_color, 
+      binwidth = 0.05,
+      boundary = 0,
+      color = "white",
+      fill = fill_color,
       alpha = fill_alpha
     ) +
     facet_wrap(~stratum, nrow = ceiling(num_strata / 4)) +
@@ -130,10 +130,10 @@ ihw_stratified_pval_hist <- function(ihw_data,
 }
 
 #' Stratified p-value eCDFs
-#' 
+#'
 #' Plot empirical CDFs for p-values stratified by the IHW variable.
 #'
-#' This plot partitions p-values into multiple eCDFs by IHW variable strata. An informative 
+#' This plot partitions p-values into multiple eCDFs by IHW variable strata. An informative
 #' IHW variable will show a strongly increasing area under curve as the stratum ID increases.
 #'
 #' @param ihw_data An ihwResult object.
@@ -142,9 +142,9 @@ ihw_stratified_pval_hist <- function(ihw_data,
 #' @family ihw
 #' @export
 ihw_pval_cdf <- function(ihw_data,
-                         num_strata = nlevels(groups_factor(ihw_data))) {
+                         num_strata = nlevels(IHW::groups_factor(ihw_data))) {
   ihw_table <- as.data.frame(ihw_data)
-  ihw_table$stratum <- groups_by_filter(ihw_table$covariate, nbins = num_strata)
+  ihw_table$stratum <- IHW::groups_by_filter(ihw_table$covariate, nbins = num_strata)
   output_plot <- ggplot(ihw_table, aes(x = pvalue, col = stratum)) +
     stat_ecdf(geom = "step", size = 1.5) +
     labs(color = "Stratum", x = "p-value", y = "Proportion") +
@@ -158,8 +158,9 @@ ihw_pval_cdf <- function(ihw_data,
       axis.title = element_text(size = 18),
       axis.title.y = element_text(vjust = 3),
       axis.title.x = element_text(vjust = -1),
-      panel.grid = element_line(size = 1)) +
-      guides(colour = guide_legend(override.aes = list(size = 10)))
+      panel.grid = element_line(size = 1)
+    ) +
+    guides(colour = guide_legend(override.aes = list(size = 10)))
   return(output_plot)
 }
 
@@ -168,7 +169,7 @@ ihw_pval_cdf <- function(ihw_data,
 #' Plot p-value weights for each strata partitioned by fold.
 #'
 #' Produces either a barplot or line plot depending on if the IHW variable is nominal or ordinal.
-#' A stable p-value weighting scheme is expected to show consistent weights across folds within a 
+#' A stable p-value weighting scheme is expected to show consistent weights across folds within a
 #' stratum and increasing weights with increasing stratum ID.
 #'
 #' @param ihw_data An ihwResult object.
@@ -185,9 +186,9 @@ ihw_partitioned_pval_weights <- function(ihw_data,
                                          line_size = 1.5,
                                          alpha = 1) {
   fold_weights <- weights(ihw_data, levels_only = T)
-  fold_ids <- factor(seq_len(nfolds(ihw_data)))
+  fold_ids <- factor(seq_len(IHW::nfolds(ihw_data)))
   plot_data <- expand.grid(
-    stratum = seq_len(nlevels(groups_factor(ihw_data))),
+    stratum = seq_len(nlevels(IHW::groups_factor(ihw_data))),
     fold = fold_ids
   )
   plot_data$weight <- mapply(
@@ -197,8 +198,7 @@ ihw_partitioned_pval_weights <- function(ihw_data,
     plot_data$stratum,
     plot_data$fold
   )
-  output_plot <- switch(
-    scale,
+  output_plot <- switch(scale,
     nominal = {
       ggplot(plot_data, aes(x = fold, y = weight, fill = fold)) +
         geom_bar(stat = "identity", position = "dodge", alpha = alpha, color = "white") +
@@ -218,9 +218,9 @@ ihw_partitioned_pval_weights <- function(ihw_data,
           axis.text.x = element_blank(),
           panel.grid = element_line(size = 1)
         )
-     },
-     ordinal = {
-       ggplot(plot_data, aes(x = stratum, y = weight, col = fold))+
+    },
+    ordinal = {
+      ggplot(plot_data, aes(x = stratum, y = weight, col = fold)) +
         geom_point(size = point_size, alpha = alpha) +
         geom_line(size = line_size, alpha = alpha) +
         labs(x = "Stratum", y = "P-value weight", color = "Fold") +
@@ -236,8 +236,8 @@ ihw_partitioned_pval_weights <- function(ihw_data,
           axis.text.x = element_text(vjust = -1),
           panel.grid = element_line(size = 1)
         )
-     },
-     stop(sprintf("Invalid scale = '%s'", scale))
+    },
+    stop(sprintf("Invalid scale = '%s'", scale))
   )
   return(output_plot)
 }
@@ -256,15 +256,15 @@ ihw_partitioned_pval_weights <- function(ihw_data,
 ihw_pval_decision_boundary <- function(ihw_data,
                                        scale = covariate_type(ihw_data),
                                        line_size = 1.5,
-                                       alpha = 1){
+                                       alpha = 1) {
   if (scale != "ordinal") {
     warnings("Decision boundary plot only implemented for 'ordinal' scale")
     return(NA)
   }
-  fold_weights <- weights(ihw_data, levels_only = T)      
-  fold_ids <- factor(seq_len(nfolds(ihw_data)))
+  fold_weights <- weights(ihw_data, levels_only = T)
+  fold_ids <- factor(seq_len(IHW::nfolds(ihw_data)))
   plot_data <- expand.grid(
-    stratum = seq_len(nlevels(groups_factor(ihw_data))),
+    stratum = seq_len(nlevels(IHW::groups_factor(ihw_data))),
     fold = fold_ids
   )
   plot_data$weight <- mapply(
@@ -275,8 +275,8 @@ ihw_pval_decision_boundary <- function(ihw_data,
     plot_data$fold
   )
   ihw_table <- as.data.frame(ihw_data)
-  ihw_table <- ihw_table[! is.na(ihw_table$pvalue), ]
-  min_pval <- 10 ^ (-ceiling(log10(nrow(ihw_table))) - 6)
+  ihw_table <- ihw_table[!is.na(ihw_table$pvalue), ]
+  min_pval <- 10^(-ceiling(log10(nrow(ihw_table))) - 6)
   if (sum(ihw_table$pvalue < min_pval) > 0) {
     ihw_table$pvalue[ihw_table$pvalue < min_pval] <- min_pval
   }
@@ -293,7 +293,7 @@ ihw_pval_decision_boundary <- function(ihw_data,
     list(ihw_table$group, ihw_table$fold),
     function(df) {
       passed <- (df$adj_pvalue <= ihw_data@alpha)
-      if (! any(passed)) {
+      if (!any(passed)) {
         return(min_pval)
       } else {
         return(max(df$pvalue[passed], na.rm = T))
@@ -304,7 +304,7 @@ ihw_pval_decision_boundary <- function(ihw_data,
   threshold_indices <- cbind(as.character(plot_data$stratum), as.character(plot_data$fold))
   plot_data$p_threshold <- p_threshold[threshold_indices]
   # Add another bin for plotting
-  extra_data <- subset(plot_data, stratum == nlevels(groups_factor(ihw_data)))
+  extra_data <- subset(plot_data, stratum == nlevels(IHW::groups_factor(ihw_data)))
   extra_data$min_rank <- rep(nrow(ihw_table), nrow(extra_data))
   plot_data <- rbind(plot_data, extra_data)
   output_plot <- ggplot(ihw_table, aes(x = rank(covariate), y = -log10(pvalue))) +
@@ -336,12 +336,12 @@ ihw_pval_decision_boundary <- function(ihw_data,
 #'
 #' Plot IHW adjusted p-values to raw p-values or adjusted p-values using other methods.
 #'
-#' Creates a scatterplot that compares IHW adjusted p-values to p-values adjusted using a 
+#' Creates a scatterplot that compares IHW adjusted p-values to p-values adjusted using a
 #' different method (or simply the unadjusted p-values).
 #'
 #' @param ihw_data An ihwResult object.
 #' @param p_adjust A p-value adjustment compatible with the 'method' parameter in 'p.adjust'. If
-#'   'NULL' then no p-value adjustment is made.
+#' 'NULL' then no p-value adjustment is made.
 #' @param point_size Point size for plot.
 #' @param alpha Plot colors alpha value.
 #' @return A ggplot object.
@@ -350,18 +350,19 @@ ihw_pval_decision_boundary <- function(ihw_data,
 ihw_pval_comparison <- function(ihw_data,
                                 p_adjust = NULL,
                                 point_size = 1.5,
-                                alpha = 1){
+                                alpha = 1) {
   ihw_table <- as.data.frame(ihw_data)
-  if (! is.null(p_adjust)) {
+  if (!is.null(p_adjust)) {
     ihw_table$reference_pvalue <- p.adjust(ihw_table$pvalue, method = p_adjust)
   } else {
     ihw_table$reference_pvalue <- ihw_table$pvalue
   }
   output_plot <- ggplot(ihw_table, aes(x = reference_pvalue, y = adj_pvalue, col = group)) +
     geom_point(size = point_size) +
-    #scale_colour_hue(l = 70, c = 150, drop = FALSE) +
+    # scale_colour_hue(l = 70, c = 150, drop = FALSE) +
     labs(color = "Stratum", x = "Reference p-value", y = "IHW adjusted p-value") +
-    theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+    theme(
+      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
       title = element_text(size = 18),
       legend.title = element_text(size = 16),
       legend.text = element_text(size = 16),
@@ -370,7 +371,8 @@ ihw_pval_comparison <- function(ihw_data,
       axis.title = element_text(size = 18),
       axis.title.y = element_text(vjust = 3),
       axis.title.x = element_text(vjust = -1),
-      panel.grid = element_line(size = 1)) +
+      panel.grid = element_line(size = 1)
+    ) +
     guides(colour = guide_legend(override.aes = list(size = 5)))
   return(output_plot)
 }
@@ -382,28 +384,27 @@ ihw_pval_comparison <- function(ihw_data,
 #' @description
 #' Creates ggplot objects from an ihwResult object. The ggplot objects correspond to eight plots
 #' that assess if IHW is a reasonable method to use with the user-specified independent variable:
-#'   * log p-value vs. independent variable ranking
-#'   * log p-value density plots stratified by independent variable
-#'   * p-value histograms stratified by independent variable
-#'   * p-value cumulative distributions stratified by independent variable
-#'   * mean IHW weight stratified by independent variable for multiple folds of the data
-#'   * decision boundary relative to p-values and independent variable ranking
-#'   * IHW adjusted p-values vs. raw p-values
-#'   * IHW adjusted p-values vs. adjusted p-values using a different method
+#' * log p-value vs. independent variable ranking
+#' * log p-value density plots stratified by independent variable
+#' * p-value histograms stratified by independent variable
+#' * p-value cumulative distributions stratified by independent variable
+#' * mean IHW weight stratified by independent variable for multiple folds of the data
+#' * decision boundary relative to p-values and independent variable ranking
+#' * IHW adjusted p-values vs. raw p-values
+#' * IHW adjusted p-values vs. adjusted p-values using a different method
 #' This function is a convenient wrapper to quickly generate several diagnostic plots, but each
 #' plot can be generated separately using its respective function.
 #'
 #' @param ihw_data An ihwResult object.
 #' @return A list of ggplot objects.
 #' @family ihw
-#' @seealso \code{\link{ihw_pval_scatter}}, \code{\link{ihw_pval_ridges}}, 
-#'   \code{\link{ihw_stratified_pval_hist}}, \code{\link{ihw_pval_cdf}}, 
-#'   \code{\link{ihw_partitioned_pval_weights}}, \code{\link{ihw_pval_comparison}}, 
-#'   \code{\link{ihw_pval_decision_boundary}}, 
+#' @seealso \code{\link{ihw_pval_scatter}}, \code{\link{ihw_pval_ridges}},
+#' \code{\link{ihw_stratified_pval_hist}}, \code{\link{ihw_pval_cdf}},
+#' \code{\link{ihw_partitioned_pval_weights}}, \code{\link{ihw_pval_comparison}},
+#' \code{\link{ihw_pval_decision_boundary}},
 #' @export
-ihw_diagnostic_plots <- function(ihw_data, num_strata = nlevels(groups_factor(ihw_data))) {
+ihw_diagnostic_plots <- function(ihw_data, num_strata = nlevels(IHW::groups_factor(ihw_data))) {
   plot_list <- list()
-  ihw_table <- as.data.frame(ihw_data)
   plot_list$pval_scatter <- ihw_pval_scatter(ihw_data)
   plot_list$pval_ridges <- ihw_pval_ridges(ihw_data)
   plot_list$stratified_pval_hist <- ihw_stratified_pval_hist(ihw_data)
@@ -417,5 +418,3 @@ ihw_diagnostic_plots <- function(ihw_data, num_strata = nlevels(groups_factor(ih
   )
   return(plot_list)
 }
-
-

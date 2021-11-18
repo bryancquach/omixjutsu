@@ -36,13 +36,12 @@ hist_boxplot <- function(data,
                          jitter_alpha = 0.75,
                          jitter_size = 1.75,
                          x_title = "",
-                         y_title = ""){
+                         y_title = "") {
   colnames(data) <- "value"
   ggout_list <- list()
   data_min <- min(data$value, na.rm = T)
   data_max <- max(data$value, na.rm = T)
-  axis_min <- switch (
-    as.character(sign(data_min)),
+  axis_min <- switch(as.character(sign(data_min)),
     "-1" = {
       data_min * 1.15
     },
@@ -53,8 +52,7 @@ hist_boxplot <- function(data,
       data_min - binsize
     }
   )
-  axis_max <- switch (
-    as.character(sign(data_max)),
+  axis_max <- switch(as.character(sign(data_max)),
     "-1" = {
       data_max * 0.85
     },
@@ -67,13 +65,13 @@ hist_boxplot <- function(data,
   )
   ggout_list$hist <- ggplot(data, aes(x = value)) +
     geom_histogram(
-      position = "identity", 
-      binwidth = binsize, 
-      alpha = hist_alpha, 
-      color = "white", 
+      position = "identity",
+      binwidth = binsize,
+      alpha = hist_alpha,
+      color = "white",
       fill = hist_fill
     ) +
-    xlim(axis_min, axis_max) + 
+    xlim(axis_min, axis_max) +
     labs(x = x_title, y = y_title) +
     theme(
       plot.margin = unit(c(0.5, 0.5, 0, 0.5), units = "cm"),
@@ -86,21 +84,21 @@ hist_boxplot <- function(data,
     )
   ggout_list$boxplot <- ggplot(data, aes(x = value, y = 1)) +
     geom_boxplot(
-      position = "identity", 
-      alpha = box_alpha, 
-      color = "black", 
-      fill = box_fill, 
-      outlier.alpha = 0, 
+      position = "identity",
+      alpha = box_alpha,
+      color = "black",
+      fill = box_fill,
+      outlier.alpha = 0,
       lwd = box_lwd
     ) +
     geom_jitter(
       shape = 16,
-      color = jitter_color, 
-      size = jitter_size, 
-      alpha = jitter_alpha, 
+      color = jitter_color,
+      size = jitter_size,
+      alpha = jitter_alpha,
       height = 0.15
     ) +
-    xlim(axis_min, axis_max) + 
+    xlim(axis_min, axis_max) +
     labs(x = x_title, y = y_title) +
     theme(
       plot.margin = unit(c(0, 0.5, 0.5, 0.5), units = "cm"),
@@ -109,7 +107,8 @@ hist_boxplot <- function(data,
       axis.text.x = element_text(size = 18),
       axis.title.x = element_text(size = 18, vjust = -1),
       axis.text.y = element_blank(),
-      axis.title.y = element_blank())
+      axis.title.y = element_blank()
+    )
   return(ggout_list)
 }
 
@@ -117,19 +116,19 @@ hist_boxplot <- function(data,
 #'
 #' Create an eigenvectors scatterplot from principal component analysis.
 #'
-#' Conducts a principal component analysis (PCA) then produces a scatterplot using the 
+#' Conducts a principal component analysis (PCA) then produces a scatterplot using the
 #' user-specified eigenvectors (ie., principal components or PCs) from the eigenvector matrix. Data
 #' points can be optionally color-coded based on a user-specified variable.
 #'
-#' @param data A SummarizedExperiment-like object. Must be compatible with `assay()` and 
-#'   `colData()`. The columns in `assay` equate to data points in the PC scatterplot.
-#' @param group_var A string or vector of strings for the grouping variable(s) to use from 
-#'   `colData` to color points. If multiple variables are specified, they are combined into a
-#'   single string to make a single new variable.
+#' @param data A SummarizedExperiment-like object. Must be compatible with `assay()` and
+#' `colData()`. The columns in `assay` equate to data points in the PC scatterplot.
+#' @param group_var A string or vector of strings for the grouping variable(s) to use from
+#' `colData` to color points. If multiple variables are specified, they are combined into a
+#' single string to make a single new variable.
 #' @param pc_x A numeric. The PC to plot on the x-axis.
 #' @param pc_y A numeric. The PC to plot on the y-axis.
 #' @param ntop A numeric. Specifies the top `ntop` rows ranked by decreasing variance to subset the
-#'   data to prior to PCA.
+#' data to prior to PCA.
 #' @param center A logical. Should the data be zero-centered prior to PCA?
 #' @param scale A logical. Should the data be scaled to unit variance prior to PCA?
 #' @param equal_axes A logical. Should the scatterplot use the same axis limits for both axes?
@@ -139,14 +138,14 @@ hist_boxplot <- function(data,
 #' @param palette A string for the RColorBrewer palette name to use when `group_var` is specified.
 #' @param return_data A logical. Should plot data be returned instead of a ggplot object?
 #' @return A ggplot object unless `return_data` is `TRUE`, then a data frame with the
-#'   user-specified PCs, grouping variable, and an attribute for the percent variace explained for
-#'   each user-specified PC.
-#' @seealso \code{\link{prcomp}} \code{\link{SummarizedExperiment}} \code{\link{assay}} 
-#'   \code{\link{colData}}
-ggpca <- function(data, 
-                  group_var = NULL, 
-                  pc_x = 1, 
-                  pc_y = 2, 
+#' user-specified PCs, grouping variable, and an attribute for the percent variace explained for
+#' each user-specified PC.
+#' @seealso \code{\link{prcomp}} \code{\link{SummarizedExperiment}} \code{\link{assay}}
+#' \code{\link{colData}}
+ggpca <- function(data,
+                  group_var = NULL,
+                  pc_x = 1,
+                  pc_y = 2,
                   ntop = nrow(data),
                   center = T,
                   scale = T,
@@ -155,30 +154,34 @@ ggpca <- function(data,
                   alpha = 0.75,
                   color = "red4",
                   palette = "Paired",
-                  return_data = F){
+                  return_data = F) {
   pc_x_name <- paste0("PC", pc_x)
   pc_y_name <- paste0("PC", pc_y)
-  row_vars <- rowVars(assay(data))
+  row_vars <- rowVars(SummarizedExperiment::assay(data))
   keeper_rows <- order(row_vars, decreasing = T)[seq_len(min(ntop, length(row_vars)))]
-  pca <- prcomp(t(assay(data)[keeper_rows, ]), center = center, scale. = scale)
-  pct_var <- pca$sdev ^ 2 / sum(pca$sdev ^ 2)
+  pca <- prcomp(
+    t(SummarizedExperiment::assay(data)[keeper_rows, ]), 
+    center = center, 
+    scale. = scale
+  )
+  pct_var <- pca$sdev^2 / sum(pca$sdev^2)
   if (is.null(group_var)) {
     group_var_df <- data.frame(group = rep(1, ncol(data)))
     group <- factor(group_var_df$group)
-  } else if (! all(group_var %in% names(colData(data)))) {
+  } else if (!all(group_var %in% names(SummarizedExperiment::colData(data)))) {
     stop("the argument 'group_var' should specify only column names from 'colData(data)'")
   } else {
     if (length(group_var) > 1) {
-      tmp_df <- as.data.frame(colData(data)[, group_var, drop = FALSE])
+      tmp_df <- as.data.frame(SummarizedExperiment::colData(data)[, group_var, drop = FALSE])
       group_var_df <- data.frame(group = apply(tmp_df, 1, paste, collapse = ":"))
       group <- factor(group_var_df$group)
     } else {
-      group_var_df <- as.data.frame(colData(data)[, group_var, drop = FALSE])
+      group_var_df <- as.data.frame(SummarizedExperiment::colData(data)[, group_var, drop = FALSE])
       group <- group_var_df[, group_var]
     }
   }
   plot_data <- data.frame(
-    pca$x[, pc_x], 
+    pca$x[, pc_x],
     pca$x[, pc_y],
     group
   )
@@ -193,10 +196,10 @@ ggpca <- function(data,
   data_min <- min(plot_data[, pc_x_name, drop = T], plot_data[, pc_y_name, drop = T], na.rm = T)
   data_max <- max(plot_data[, pc_x_name, drop = T], plot_data[, pc_y_name, drop = T], na.rm = T)
   ggout <- ggplot(plot_data, aes_string(x = pc_x_name, y = pc_y_name, fill = group)) +
-    geom_point(size = point_size, alpha = alpha, shape = 21, color = "white") + 
-    labs(x = x_title, y = y_title, fill = "") + 
+    geom_point(size = point_size, alpha = alpha, shape = 21, color = "white") +
+    labs(x = x_title, y = y_title, fill = "") +
     theme(
-      plot.margin = unit(c(0.5,0.5,0.5,0.5), units = "cm"),
+      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), units = "cm"),
       title = element_text(size = 18),
       axis.text = element_text(size = 18),
       axis.title = element_text(size = 18),
@@ -206,8 +209,7 @@ ggpca <- function(data,
       legend.text = element_text(size = 16)
     )
   if (equal_axes) {
-    axis_min <- switch (
-      as.character(sign(data_min)),
+    axis_min <- switch(as.character(sign(data_min)),
       "-1" = {
         data_min * 1.05
       },
@@ -218,8 +220,7 @@ ggpca <- function(data,
         data_min - binsize
       }
     )
-    axis_max <- switch (
-      as.character(sign(data_max)),
+    axis_max <- switch(as.character(sign(data_max)),
       "-1" = {
         data_max * 0.95
       },
@@ -230,12 +231,12 @@ ggpca <- function(data,
         data_max + binsize
       }
     )
-    ggout <- ggout + 
+    ggout <- ggout +
       xlim(axis_min, axis_max) +
       ylim(axis_min, axis_max)
   }
   if (is.null(group_var)) {
-    ggout <- ggout + 
+    ggout <- ggout +
       scale_fill_manual(values = color) +
       theme(legend.position = "none")
   } else {
@@ -254,15 +255,15 @@ ggpca <- function(data,
 #' of a user-specified categorical variable.
 #'
 #' Creates two plots that can be organized as a single column two row multi-figure. The top row
-#' plot is multiple overlayed histograms from data partitioned by a variable. The bottom row plot 
-#' is multiple horizontal boxplots with jittered data points overlayed. The x-axis of both plots 
+#' plot is multiple overlayed histograms from data partitioned by a variable. The bottom row plot
+#' is multiple horizontal boxplots with jittered data points overlayed. The x-axis of both plots
 #' are fixed to the same limits for comparability across plots.
 #'
 #' @param data A two-column data frame with numeric values for plotting in the first column and
-#'   the categorical variable as the second column.
+#' the categorical variable as the second column.
 #' @param binsize A numeric value for the histogram bin widths.
 #' @param colors A string vector. The histogram bar colors and jitter colors for each categorical
-#'   variable value.
+#' variable value.
 #' @param hist_alpha A numeric value for the alpha level for histogram bars.
 #' @param box_fill A string. The fill color for the boxplot.
 #' @param box_alpha A numeric value for the alpha level for the boxplot.
@@ -288,8 +289,7 @@ hist_boxplot2 <- function(data,
   ggout_list <- list()
   data_min <- min(data$value, na.rm = T)
   data_max <- max(data$value, na.rm = T)
-  axis_min <- switch (
-    as.character(sign(data_min)),
+  axis_min <- switch(as.character(sign(data_min)),
     "-1" = {
       data_min * 1.1
     },
@@ -300,8 +300,7 @@ hist_boxplot2 <- function(data,
       data_min - binsize
     }
   )
-  axis_max <- switch (
-    as.character(sign(data_max)),
+  axis_max <- switch(as.character(sign(data_max)),
     "-1" = {
       data_max * 0.9
     },
@@ -314,12 +313,12 @@ hist_boxplot2 <- function(data,
   )
   ggout_list$hist <- ggplot(data, aes(x = value, fill = group)) +
     geom_histogram(
-      position = "identity", 
-      binwidth = binsize, 
-      alpha = hist_alpha, 
-      color = "white", 
+      position = "identity",
+      binwidth = binsize,
+      alpha = hist_alpha,
+      color = "white",
     ) +
-    xlim(axis_min, axis_max) + 
+    xlim(axis_min, axis_max) +
     labs(x = x_title, y = y_title, fill = "") +
     theme(
       plot.margin = unit(c(0.5, 0.5, 0, 0.5), units = "cm"),
@@ -334,20 +333,20 @@ hist_boxplot2 <- function(data,
     )
   ggout_list$boxplot <- ggplot(data, aes(x = value, y = group, color = group)) +
     geom_boxplot(
-      position = "identity", 
-      alpha = box_alpha, 
-      color = "black", 
-      fill = box_fill, 
-      outlier.alpha = 0, 
+      position = "identity",
+      alpha = box_alpha,
+      color = "black",
+      fill = box_fill,
+      outlier.alpha = 0,
       lwd = box_lwd
     ) +
     geom_jitter(
       shape = 16,
-      size = jitter_size, 
-      alpha = jitter_alpha, 
+      size = jitter_size,
+      alpha = jitter_alpha,
       height = 0.15
     ) +
-    xlim(axis_min, axis_max) + 
+    xlim(axis_min, axis_max) +
     labs(x = x_title, y = y_title, color = "") +
     theme(
       plot.margin = unit(c(0, 0.5, 0.5, 0.5), units = "cm"),
@@ -365,7 +364,7 @@ hist_boxplot2 <- function(data,
     ggout_list$boxplot <- ggout_list$boxplot + scale_color_brewer(palette = "Dark2")
   } else {
     ggout_list$hist <- ggout_list$hist + scale_fill_manual(values = colors)
-    ggout_list$boxplot <- ggout_list$boxplot + scale_color_manual(values = colors) 
+    ggout_list$boxplot <- ggout_list$boxplot + scale_color_manual(values = colors)
   }
   return(ggout_list)
 }
@@ -380,7 +379,7 @@ hist_boxplot2 <- function(data,
 #' @param alpha Bin fill color alpha value.
 #' @return A ggplot object.
 #' @export
-pval_histogram <- function(pvalues, bin_width = 0.025, bin_fill = "gray10", alpha = 0.8){
+pval_histogram <- function(pvalues, bin_width = 0.025, bin_fill = "gray10", alpha = 0.8) {
   plot_data <- data.frame(pvalue = pvalues)
   output_plot <- ggplot(plot_data, aes(x = pvalue)) +
     geom_histogram(
@@ -393,12 +392,12 @@ pval_histogram <- function(pvalues, bin_width = 0.025, bin_fill = "gray10", alph
     xlim(0, 1) +
     labs(y = "Frequency", x = "p-value") +
     theme(
-        plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-        title = element_text(size = 18),
-        axis.text = element_text(size = 18),
-        axis.title = element_text(size = 18),
-        axis.title.y = element_text(vjust = 3),
-        axis.title.x = element_text(vjust = -1)
+      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+      title = element_text(size = 18),
+      axis.text = element_text(size = 18),
+      axis.title = element_text(size = 18),
+      axis.title.y = element_text(vjust = 3),
+      axis.title.x = element_text(vjust = -1)
     )
   return(output_plot)
 }
@@ -408,18 +407,18 @@ pval_histogram <- function(pvalues, bin_width = 0.025, bin_fill = "gray10", alph
 #' Plots observed vs. expected p-values.
 #'
 #' Plot observed p-values vs. expected p-values. Expected p-values are assumed to follow a
-#' uniform distribution. 
+#' uniform distribution.
 #'
 #' @param pvalues A vector of pvalues with associated feature IDs.
 #' @param outliers A vector of outlier IDs that correspond to the names in 'pvalues'.
 #' @param sig_cutoff Adjusted p-value significance threshold.
 #' @param plot_lambda If 'TRUE' calculate the genomic inflation factor and overlay it on the plot.
-#' @param df Degrees of freedom on the theoretical distribution. Used in calculating the genomic 
-#'   inflation factor. Only relevant when `plot_lambda` is 'TRUE'.
+#' @param df Degrees of freedom on the theoretical distribution. Used in calculating the genomic
+#' inflation factor. Only relevant when `plot_lambda` is 'TRUE'.
 #' @return A ggplot object.
 #' @export
-pval_qqplot <- function (pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambda = T, df = 1) {
-  if(! all(outliers %in% names(pvalues))) {
+pval_qqplot <- function(pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambda = T, df = 1) {
+  if (!all(outliers %in% names(pvalues))) {
     warnings("Not all outliers present in 'pvalues'")
   }
   plot_data <- data.frame(
@@ -427,12 +426,12 @@ pval_qqplot <- function (pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambd
     log_p = -log10(pvalues),
     is_outlier = (names(pvalues) %in% outliers)
   )
-  sorted_p <- sort(plot_data$pvalues[which(! plot_data$is_outlier)])
+  sorted_p <- sort(plot_data$pvalues[which(!plot_data$is_outlier)])
   if (plot_lambda) {
     lambda <- qchisq(median(sorted_p), df, lower.tail = F) / qchisq(0.5, df, lower.tail = F)
     lambda <- round(lambda, 3)
   }
-  keepers <- which(plot_data$log_p < Inf & (! plot_data$is_outlier))
+  keepers <- which(plot_data$log_p < Inf & (!plot_data$is_outlier))
   plot_data <- plot_data[keepers, , drop = F]
   plot_data <- plot_data[order(plot_data$log_p, decreasing = T), ]
   num_pvals <- nrow(plot_data)
@@ -448,7 +447,8 @@ pval_qqplot <- function (pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambd
     qbeta(
       1 - (sig_cutoff / 2),
       1:num_pvals,
-      (num_pvals + 1) - (1:num_pvals))
+      (num_pvals + 1) - (1:num_pvals)
+    )
   )
   plot_data$ci_expected <- -log10(((1:num_pvals) - 0.5) / num_pvals)
   xy_max <- max(plot_data$expected_log_p, plot_data$log_p) + 1
@@ -479,8 +479,8 @@ pval_qqplot <- function (pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambd
     xlim(0, xy_max) +
     ylim(0, xy_max) +
     labs(
-      x = expression(-log~""["10"]~"(Expected p-value)"),
-      y = expression(-log~""["10"]~"(Observed p-value)")
+      x = expression(-log ~ ""["10"] ~ "(Expected p-value)"),
+      y = expression(-log ~ ""["10"] ~ "(Observed p-value)")
     ) +
     theme(
       plot.margin = unit(c(0.5, 0.5, 0.5, 1), "cm"),
