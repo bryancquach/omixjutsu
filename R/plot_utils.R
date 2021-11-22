@@ -273,6 +273,7 @@ ggpca <- function(data,
 #' @param x_title A string denoting the x-axis title. Only added to the boxplot.
 #' @param y_title A string denoting the y-axis title. Only added to the histogram.
 #' @return A list of two ggplot objects `hist` and `boxplot`.
+#' @seealso \code{\link{hist_boxplot}}
 #' @export
 hist_boxplot2 <- function(data,
                           binsize = diff(range(data[, 1])) / 25,
@@ -501,5 +502,77 @@ pval_qqplot <- function(pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambda
         size = 6
       )
   }
+  return(output_plot)
+}
+
+#' Grouped barplot
+#'
+#' Creates a grouped barplot.
+#'
+#' Creates a barplot for frequencies of two factor variables in which one variable is used to
+#' stratify the other.
+#'
+#' @param data A data frame with columns from which to retrieve variables to plot.
+#' @param x_var A string denoting the column name of the primary barplot variable.
+#' @param y_var A string denoting the column name of the secondary barplot variable.
+#' @param rm_ids A string vector of the row names to exclude prior to plotting.
+#' @param fill A string vector denoting the fill colors for barplot bars.
+#' @param alpha A numeric value for the alpha level for barplot bars.
+#' @param lwd A numeric value for the barplot bar line width.
+#' @param fill A string denoting the line color for barplot bars.
+#' @param x_title A string denoting the x-axis title.
+#' @param y_title A string denoting the y-axis title.
+#' @param legend_title A string denoting the legend title. Should correspond to `y_var`.
+#' @return A ggplot object.
+#' @export
+grouped_barplot <- function(data,
+                            x_var,
+                            y_var,
+                            rm_ids = NULL,
+                            fill = NULL,
+                            alpha = 1,
+                            lwd = 1,
+                            line_color = "black",
+                            x_title = NULL,
+                            y_title = NULL,
+                            legend_title = NULL) {
+  if (!is.null(rm_ids)) {
+    if (!all(rm_ids %in% rownames(data))) {
+      warning("Not all elements in 'rm_ids' found in 'data'")
+    }
+    keepers <- which(!rownames(data) %in% rm_ids)
+    data <- data[keepers, ]
+  }
+  plot_data <- melt(
+    table(data[, x_var], data[, y_var]),
+    varnames = c("var1", "var2")
+  )
+  plot_data$var1 <- as.factor(plot_data$var1)
+  plot_data$var2 <- as.factor(plot_data$var2)
+  if (is.null(fill)) {
+    num_factors <- nlevels(plot_data$var2)
+    fill = brewer.pal(n = max(3, num_factors), name = "Spectral")[1:num_factors]
+  }
+  output_plot <- ggplot(plot_data, aes(x = value, y = var1, fill = var2)) +
+    geom_bar(
+      stat = "identity",
+      position = position_dodge(),
+      alpha = alpha,
+      lwd = lwd,
+      color = line_color
+    ) +
+    scale_fill_manual(values = fill) +
+    labs(x = x_title, y = y_title, fill = legend_title) +
+    theme(
+      plot.margin = unit(c(0.5, 0.5, 0.5, 1), "cm"),
+      title = element_text(size = 16),
+      legend.title = element_text(size = 16),
+      legend.key.size = unit(1, "cm"),
+      legend.text = element_text(size = 16),
+      axis.text = element_text(size = 18),
+      axis.title = element_text(size = 18),
+      axis.title.y = element_text(vjust = 3),
+      axis.title.x = element_text(vjust = -1)
+    )
   return(output_plot)
 }

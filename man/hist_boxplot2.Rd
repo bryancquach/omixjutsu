@@ -56,3 +56,6 @@ plot is multiple overlayed histograms from data partitioned by a variable. The b
 is multiple horizontal boxplots with jittered data points overlayed. The x-axis of both plots
 are fixed to the same limits for comparability across plots.
 }
+\seealso{
+\code{\link{hist_boxplot}}
+}
