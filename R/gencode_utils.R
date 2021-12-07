@@ -133,7 +133,7 @@ make_gencode_gene_id_map <- function(gtf_file, output_file = NULL) {
     stop("Error: GTF file not found")
   }
   cat("\nLoading GTF file...\n")
-  gtf <- read.delim(gtf_file, comment.char = "#'", sep = "\t", header = F, stringsAsFactors = F)
+  gtf <- read.delim(gtf_file, comment.char = "#", sep = "\t", header = F, stringsAsFactors = F)
   cat("\nParsing GTF file...\n")
   gene_row_index <- (gtf[, 3] == "gene")
   gene_gtf_col9 <- strsplit(gtf[gene_row_index, 9], split = ";")

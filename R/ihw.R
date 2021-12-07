@@ -24,7 +24,7 @@ ihw_pval_scatter <- function(ihw_data,
                              point_color = "gray20",
                              point_alpha = 0.5,
                              point_size = 2) {
-  ihw_table <- as.data.frame(ihw_data)
+  ihw_table <- IHW::as.data.frame(ihw_data)
   if (truncate_y) {
     log_p <- -log10(ihw_table$pvalue)
     outlier_cutoff <- quantile(log_p, probs = c(0.75)) + 1.5 * IQR(log_p, na.rm = T)
@@ -61,11 +61,11 @@ ihw_pval_scatter <- function(ihw_data,
 #' @family ihw
 #' @export
 ihw_pval_ridges <- function(ihw_data, num_quantiles = 10, fill_color = "gray70", fill_alpha = 1) {
-  ihw_table <- as.data.frame(ihw_data)
+  ihw_table <- IHW::as.data.frame(ihw_data)
   breakpoints <- quantile(ihw_table$covariate, probs = seq(0, 1, by = 1 / num_quantiles))
   ihw_table$stratum <- cut(ihw_table$covariate, breaks = breakpoints, labels = 1:num_quantiles)
   output_plot <- ggplot(ihw_table, aes(x = -log10(pvalue), y = stratum)) +
-    stat_density_ridges(
+    ggridges::stat_density_ridges(
       quantile_lines = T,
       quantiles = 2,
       fill = fill_color,
@@ -74,7 +74,7 @@ ihw_pval_ridges <- function(ihw_data, num_quantiles = 10, fill_color = "gray70",
       na.rm = T
     ) +
     labs(x = "-log10(p)", y = "Stratum") +
-    theme_ridges(center_axis_labels = 1) +
+    ggridges::theme_ridges(center_axis_labels = 1) +
     theme(
       legend.position = "none",
       plot.margin = unit(c(0.5, 0.25, 0.25, 0.25), "cm"),
@@ -103,7 +103,7 @@ ihw_stratified_pval_hist <- function(ihw_data,
                                      num_strata = nlevels(IHW::groups_factor(ihw_data)),
                                      fill_color = "gray20",
                                      fill_alpha = 1) {
-  ihw_table <- as.data.frame(ihw_data)
+  ihw_table <- IHW::as.data.frame(ihw_data)
   ihw_table$stratum <- IHW::groups_by_filter(ihw_table$covariate, nbins = num_strata)
   output_plot <- ggplot(ihw_table, aes(x = pvalue)) +
     labs(title = "Stratified p-value histograms", x = "p-value", y = "Frequency") +
@@ -143,7 +143,7 @@ ihw_stratified_pval_hist <- function(ihw_data,
 #' @export
 ihw_pval_cdf <- function(ihw_data,
                          num_strata = nlevels(IHW::groups_factor(ihw_data))) {
-  ihw_table <- as.data.frame(ihw_data)
+  ihw_table <- IHW::as.data.frame(ihw_data)
   ihw_table$stratum <- IHW::groups_by_filter(ihw_table$covariate, nbins = num_strata)
   output_plot <- ggplot(ihw_table, aes(x = pvalue, col = stratum)) +
     stat_ecdf(geom = "step", size = 1.5) +
@@ -274,7 +274,7 @@ ihw_pval_decision_boundary <- function(ihw_data,
     plot_data$stratum,
     plot_data$fold
   )
-  ihw_table <- as.data.frame(ihw_data)
+  ihw_table <- IHW::as.data.frame(ihw_data)
   ihw_table <- ihw_table[!is.na(ihw_table$pvalue), ]
   min_pval <- 10^(-ceiling(log10(nrow(ihw_table))) - 6)
   if (sum(ihw_table$pvalue < min_pval) > 0) {
@@ -351,7 +351,7 @@ ihw_pval_comparison <- function(ihw_data,
                                 p_adjust = NULL,
                                 point_size = 1.5,
                                 alpha = 1) {
-  ihw_table <- as.data.frame(ihw_data)
+  ihw_table <- IHW::as.data.frame(ihw_data)
   if (!is.null(p_adjust)) {
     ihw_table$reference_pvalue <- p.adjust(ihw_table$pvalue, method = p_adjust)
   } else {

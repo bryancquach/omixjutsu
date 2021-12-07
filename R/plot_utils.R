@@ -493,7 +493,7 @@ pval_qqplot <- function(pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambda
       axis.title.x = element_text(vjust = -1)
     )
   if (plot_lambda) {
-    output_plot +
+    output_plot <- output_plot +
       annotate(
         "text",
         x = xy_max - 1,
