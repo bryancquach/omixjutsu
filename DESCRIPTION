@@ -1,6 +1,6 @@
 Package: omixjutsu
 Title: Utilities for omics analysis tasks
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: 
   person(
     given = "Bryan",
@@ -17,6 +17,7 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+biocViews:
 Imports:
   ggplot2 (>= 3.3.2),
   ggridges (>= 0.5.2),
@@ -24,4 +25,7 @@ Imports:
   DESeq2 (>= 1.26.0),
   IHW (>= 1.14.0),
   robustbase (>= 0.93-5),
-  RColorBrewer (>= 1.1-2)
+  RColorBrewer (>= 1.1-2),
+  caret (>= 6.0-90),
+  RcppEigen (>= 0.3.3.9.1),
+  Hmisc (>= 4.6-0)
