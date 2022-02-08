@@ -21,6 +21,7 @@ biocViews:
 Imports:
   ggplot2 (>= 3.3.2),
   ggridges (>= 0.5.2),
+  ggrepel,
   reshape2 (>= 1.4.4),
   DESeq2 (>= 1.26.0),
   IHW (>= 1.14.0),

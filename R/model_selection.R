@@ -22,12 +22,12 @@
 #' @return A data frame of explanatory variables for regression.
 #' @seealso \code{\link{get_residual_matrix}}
 #' @export
-get_design_mat <- function (data,
-                            var_names = NULL,
-                            corr_cutoff = 0.75, 
-                            corr_method = c("spearman", "pearson"),
-                            check_binary_vars = T,
-                            strings_as_factors = T) {
+get_design_mat <- function(data,
+                           var_names = NULL,
+                           corr_cutoff = 0.75,
+                           corr_method = c("spearman", "pearson"),
+                           check_binary_vars = T,
+                           strings_as_factors = T) {
   if (corr_cutoff < 0 | corr_cutoff > 1) {
     stop("Error: 'corr_cutoff' must be in the range [0,1]")
   }
@@ -48,8 +48,8 @@ get_design_mat <- function (data,
     }
   }
   is_keeper <- apply(
-    data, 
-    2, 
+    data,
+    2,
     function(x) {
       num_items <- length(unique(na.omit(x)))
       return(num_items > 1)
@@ -68,8 +68,8 @@ get_design_mat <- function (data,
   # Only binary or numeric variables can be compared for collinearity
   if (check_binary_vars) {
     is_binary <- apply(
-      corrcheck_data, 
-      2, 
+      corrcheck_data,
+      2,
       function(x) {
         num_items <- length(unique(na.omit(x)))
         return(num_items == 2)
@@ -118,14 +118,14 @@ get_design_mat <- function (data,
 #' * dof: Model degrees of freedom.
 #' @seealso \code{\link{get_matrix_r2}} \code{\link{get_design_mat}}
 #' @export
-get_residual_matrix <- function (design, outcomes) {
+get_residual_matrix <- function(design, outcomes) {
   results <- list()
   y <- outcomes
   x <- design
   y <- t(y)
   resid_mat <- matrix(ncol = ncol(y), nrow = nrow(y))
-  for(i in seq_len(ncol(y))){
-    lm_fit <- RcppEigen::fastLm(y[, i] ~ 1 + . , data = x)
+  for (i in seq_len(ncol(y))) {
+    lm_fit <- RcppEigen::fastLm(y[, i] ~ 1 + ., data = x)
     resid_mat[, i] <- lm_fit$residuals
   }
   results[["residuals"]] <- resid_mat
@@ -150,10 +150,10 @@ get_residual_matrix <- function (design, outcomes) {
 #' * adjusted_r2: A numeric value (or NA) corresponding to the adjusted r-squared.
 #' @seealso \code{\link{get_residual_matrix}}
 #' @export
-get_matrix_r2 <- function (outcomes,
-                           residuals,
-                           adjusted = F,
-                           dof = NULL) {
+get_matrix_r2 <- function(outcomes,
+                          residuals,
+                          adjusted = F,
+                          dof = NULL) {
   if (adjusted & is.null(dof)) {
     stop("Error: degrees of freedom required for adjusted r-squared calculation")
   }
@@ -173,10 +173,132 @@ get_matrix_r2 <- function (outcomes,
 #'
 #' Plots regression model r-squared vs. model size (number of variables).
 #'
-#' @param data A data frame like object with outcome variables as rows and observations as
-#' columns.
-#' @return A ggplot object
-#' @seealso \code{\link{get_matrix_r2}} \code{\link{get_residual_matrix}} 
+#' Creates a scatterplot showing the tradeoff between variance explained of the outcome
+#' (e.g., gene expression) and model complexity. This function is designed to be a visualization
+#' helper function for the output from `get_matrix_r2`. It allows for the plotting of only r2, only
+#' adjusted r2, or both.
+#'
+#' @param pve_list A list of lists containing regression model information. Each list must have the
+#' same element ordering, and the following elements and corresponding names are required:
+#' * `r2`: The coefficient of determination. Can be calculated using `get_matrix_r2()`. Value can
+#' be `NA` if `adjusted_r2` is numeric.
+#' * `adjusted_r2`: The adjusted r2. Can be calculated using `get_matrix_r2()`. Value can be `NA`
+#' if `r2` is numeric.
+#' * `num_model_vars`: The number of variables in the model used to calculate `r2` and
+#' `adjusted_r2`.
+#' @param model_names A vector of model names that follows the same ordering as the lists in
+#' `pve_list`. If not provided, a sequential numbering will be used.
+#' @param line_color A string for the line color between points.
+#' @param line_alpha A numeric for the line alpha value.
+#' @param line_type A string for the line type between points.
+#' @param line_size A numeric for the line size between points.
+#' @param point_color A vector of colors corresponding to the groups of points (r2 vs adjusted r2).
+#' If not specified, default colors from a color palette will be used.
+#' @param palette A string corresponding to a color palette from which point colors are chosen.
+#' @param point_alpha A numeric for the point alpha value.
+#' @param point_shape A numeric for the point shape.
+#' @param point_size A numeric for the point size.
+#' @param label_size A numeric for the label text size..
+#' @param label_line_size A numeric for the line thickness of the guide line from the label text
+#' to its corresponding point.
+#' @param label_line_alpha. A numeric for the line alpha value of the guide line from the label
+#' text to its corresponding point.
+#' @param title Plot title.
+#' @param x_title X-axis title.
+#' @param y_title Y-axis title.
+#' @param legend_title Legend title.
+#' @param xlim_multiplier A numeric constant used to increase or decrease the x-axis range.
+#' @param ylim_multiplier A numeric constant used to icnrease or decrease the y-axis range.
+#' @return A ggplot object.
+#' @seealso \code{\link{get_matrix_r2}} \code{\link{get_residual_matrix}}
 #' \code{\link{get_design_mat}}
 #' @export
-plot_r2 <- function(){}
+plot_r2 <- function(pve_list,
+                    model_names = NULL,
+                    line_color = "gray50",
+                    line_alpha = 0.5,
+                    line_type = "dashed",
+                    line_size = 1.5,
+                    point_color = NULL,
+                    palette = "Paired",
+                    point_alpha = 1,
+                    point_shape = 16,
+                    point_size = 5,
+                    label_size = 5,
+                    label_line_size = 0.75,
+                    label_line_alpha = 0.5,
+                    title = NULL,
+                    x_title = "Model complexity (no. of variables)",
+                    y_title = "Variance explained",
+                    legend_title = NULL,
+                    legend_position = "right",
+                    xlim_multiplier = 0.25,
+                    ylim_multiplier = 0.25) {
+  pve_df <- data.frame(t(sapply(pve_list, unlist)))
+  if (is.null(model_names)) {
+    model_names <- paste0("Model ", seq_len(nrow(pve_df)))
+  } else {
+    if (nrow(pve_df) != length(model_names)) {
+      stop("Error: `model_names` and `pve_list` are not equal length")
+    }
+  }
+  pve_df$model <- model_names
+  plot_data <- reshape2::melt(
+    pve_df,
+    id.vars = c("model", "num_model_vars"),
+    measure.vars = c("r2", "adjusted_r2")
+  )
+  plot_data$label <- paste0(plot_data$model, "\n(", round(plot_data$value, 2), ")")
+  # Axis limits need wiggle room for label text to fit
+  x_limits <- range(plot_data$num_model_vars)
+  x_buffer <- c(-1 * abs(diff(x_limits)) * xlim_multiplier, abs(diff(x_limits)) * xlim_multiplier)
+  x_limits <- x_limits + x_buffer
+  y_limits <- range(plot_data$value)
+  y_buffer <- c(-1 * abs(diff(y_limits)) * ylim_multiplier, abs(diff(y_limits)) * ylim_multiplier)
+  y_limits <- y_limits + y_buffer
+  output_plot <- ggplot(
+    data = plot_data,
+    mapping = aes(x = num_model_vars, y = value, group = variable, label = label)
+  ) +
+    geom_line(linetype = line_type, color = line_color, alpha = line_alpha, size = line_size) +
+    geom_point(
+      aes(color = variable),
+      size = point_size,
+      alpha = point_alpha,
+      shape = point_shape
+    ) +
+    xlim(x_limits[1], x_limits[2]) +
+    ylim(y_limits[1], y_limits[2]) +
+    ggrepel::geom_text_repel(
+      box.padding = 0.75,
+      max.overlaps = Inf,
+      size = label_size,
+      segment.alpha = label_line_alpha,
+      segment.size = label_line_size
+    ) +
+    labs(title = title, x = x_title, y = y_title, color = legend_title) +
+    theme(
+      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), units = "cm"),
+      title = element_text(size = 16),
+      legend.title = element_text(size = 18),
+      legend.key.size = unit(1, "cm"),
+      legend.text = element_text(size = 16),
+      legend.text.align = 0,
+      legend.position = legend_position,
+      axis.text = element_text(size = 18),
+      axis.title = element_text(size = 18),
+      axis.title.y = element_text(vjust = 3),
+      axis.title.x = element_text(vjust = -1),
+    )
+  if (is.null(point_color)) {
+    output_plot <- output_plot +
+      scale_color_brewer(palette = palette, labels = c(expression(r^2), expression("adjusted r"^2)))
+  } else {
+    output_plot <- output_plot +
+      scale_color_manual(
+        values = point_color, 
+        labels = c(expression(r^2), expression("adjusted r"^2))
+      )
+  }
+  return(output_plot)
+}
