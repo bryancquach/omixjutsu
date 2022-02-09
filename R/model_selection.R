@@ -63,7 +63,7 @@ get_design_mat <- function(data,
     data <- data[, is_keeper]
     corrcheck_data <- data
   } else {
-    stop("Error: no `var_names` variables with non-zero variance")
+    stop("Error: no variables with non-zero variance")
   }
   # Only binary or numeric variables can be compared for collinearity
   if (check_binary_vars) {
@@ -301,4 +301,88 @@ plot_r2 <- function(pve_list,
       )
   }
   return(output_plot)
+}
+
+#' Association matrix
+#'
+#' Creates an association matrix based on pairwise measures of association between variables.
+#'
+#' Calculates pairwise associations for a set of variables. Depending on the measure
+#' of association specified, variables will be excluded if the variable type
+#' (e.g., nominal or continuous) does not make sense to include in the calculations. Cramer's V
+#' will only be calculated between two nominal variables. Eta-squared will only be applied to
+#' nominal-continuous variable pairs. Pearson, spearman, and kendall correlations exclude nominal
+#' variables with >2 values.
+#'
+#' @param data A data frame with columns from which to retrieve variables to compute associations.
+#' @param var_names A vector of variables names from the columns of `data` to consider.
+#' @param method The type of association to calculate. One of `pearson` (default), `spearman`,
+#' `kendall`, `eta_squared`, `cramers_v`.
+#' @param use A string giving a method for computing covariances in the presence of missing
+#' values. This must be one of the strings `everything`, `all.obs`, `complete.obs`,
+#' `na.or.complete`, or `pairwise.complete.obs`. See the `cor` function documentation for details
+#' on what each value specifies. Only relevant for correlation metrics.
+#' @return A data frame with association metric values.
+#' @export
+assoc_matrix <- function(data, 
+                         var_names = NULL,
+                         method = c("pearson", "spearman", "kendall", "eta_squared", "cramers_v"),
+                         use = c(
+                           "pairwise.complete.obs", 
+                           "everything", 
+                           "all.obs", 
+                           "complete.obs", 
+                           "na.or.complete")) {
+  method <- match.arg(method)
+  use <- match.arg(use)
+  if (length(var_names) > 0) {
+    if (any(!var_names %in% colnames(data))) {
+      stop("Error: Not all `var_names` found in `data`")
+    }
+    if (length(var_names) == 1) {
+      stop("Error: `var_names` must include >=2 variables")
+    }
+    data <- data[, var_names]
+  }
+  print(paste("Initial variables:", ncol(data)))
+  # Associations are only for variables with non-zero variance
+  is_keeper <- apply(
+    data,
+    2,
+    function(x) {
+      num_items <- length(unique(na.omit(x)))
+      return(num_items > 1)
+    }
+  )
+  if (sum(is_keeper) > 1) {
+    print(paste("Variables with non-zero variance:", sum(is_keeper)))
+    data <- data[, is_keeper]
+  } else {
+    stop("Error: <2 variables with non-zero variance")
+  }
+  # Calculations on binary or numeric variables only
+  if (method %in% c("pearson", "spearman", "kendall")) {
+    is_binary <- apply(
+      data,
+      2,
+      function(x) {
+        num_items <- length(unique(na.omit(x)))
+        return(num_items == 2)
+      }
+    )
+    # Binary variables must be numeric for correlation calculations
+    for (i in seq_len(length(is_binary))) {
+      if (is_binary[i]) {
+        data[, i] <- as.numeric(as.factor(data[, i, drop = T]))
+      }
+    }
+    is_numeric <- sapply(data, class) %in% c("integer", "numeric")
+    candidates <- which(is_numeric | is_binary)
+    print(paste("Final variable set size:", length(candidates)))
+    data <- data[, candidates]
+    assoc_out <- cor(data, method = method, use = use)
+    return(assoc_out)
+  }
+  #TODO: Eta-squared calculations
+  #TODO: Cramer's V calculations
 }
