@@ -312,10 +312,15 @@ plot_r2 <- function(pve_list,
 #' (e.g., nominal or continuous) does not make sense to include in the calculations. Cramer's V
 #' will only be calculated between two nominal variables. Eta-squared will only be applied to
 #' nominal-continuous variable pairs. Pearson, spearman, and kendall correlations exclude nominal
-#' variables with >2 values.
+#' variables with >2 values. Variable exclusions are based on the variable type as defined in
+#' `data`, so these should be verified. Categorical variables with values coded as integers can be
+#' mistakenly treated as continuous variables. Nominal variables should be of class `factor` (not 
+#' `character`). Numeric variables should be of class `integer` or `numeric`.
 #'
 #' @param data A data frame with columns from which to retrieve variables to compute associations.
 #' @param var_names A vector of variables names from the columns of `data` to consider.
+#' @param factor_vars A vector that includes the names of variables that should be converted to 
+#' factors. Must be in `data` or `var_names` if specified.
 #' @param method The type of association to calculate. One of `pearson` (default), `spearman`,
 #' `kendall`, `eta_squared`, `cramers_v`.
 #' @param use A string giving a method for computing covariances in the presence of missing
@@ -326,6 +331,7 @@ plot_r2 <- function(pve_list,
 #' @export
 assoc_matrix <- function(data, 
                          var_names = NULL,
+                         factor_vars = NULL,
                          method = c("pearson", "spearman", "kendall", "eta_squared", "cramers_v"),
                          use = c(
                            "pairwise.complete.obs", 
@@ -343,6 +349,14 @@ assoc_matrix <- function(data,
       stop("Error: `var_names` must include >=2 variables")
     }
     data <- data[, var_names]
+  }
+  if (!is.null(factor_vars)) {
+    if(!all(factor_vars %in% colnames(data))) {
+      stop("Error: Not all `factor_vars` found in `data` (or `var_names` if not NULL)")
+    }
+    for (i in factor_vars) {
+      data[, i] <- as.factor(data[, i])
+    }
   }
   print(paste("Initial variables:", ncol(data)))
   # Associations are only for variables with non-zero variance
@@ -379,10 +393,52 @@ assoc_matrix <- function(data,
     is_numeric <- sapply(data, class) %in% c("integer", "numeric")
     candidates <- which(is_numeric | is_binary)
     print(paste("Final variable set size:", length(candidates)))
-    data <- data[, candidates]
+    if (length(candidates) < 2) {
+      stop("Error: <2 variables with non-zero variance")
+    }
+    data <- as.matrix(data[, candidates])
     assoc_out <- cor(data, method = method, use = use)
     return(assoc_out)
   }
-  #TODO: Eta-squared calculations
+  # Calculations only between nominal and numeric variables
+  if (method == "eta_squared") {
+    is_numeric <- which(sapply(data, class) %in% c("integer", "numeric"))
+    if (length(is_numeric) == 0) {
+      stop("Error: no numeric variables in `data`")
+    }
+    numeric_vars <- colnames(data)[is_numeric]
+    is_factor <- which(sapply(data, class) == "factor")
+    if (length(is_factor) == 0) {
+      stop("Error: no factor variables in `data`")
+    }
+    factor_vars <- colnames(data)[is_factor]
+    anova_pairs <- expand.grid(numeric_var = numeric_vars, factor_var = factor_vars)
+    eta_squared_vec <- apply(
+      anova_pairs, 
+      1, 
+      function(x) {
+        formula_str <- paste0(x[1], "~", x[2])
+        aov_fit <- aov(as.formula(formula_str), data = data)
+        return(lsr::etaSquared(aov_fit)[, "eta.sq"])
+      },
+      simplify = T
+    )
+    eta_squared_df <- cbind(anova_pairs, eta_squared = eta_squared_vec)
+    # Reshape into a matrix
+    assoc_out <- matrix(NA, nrow = length(factor_vars), ncol = length(numeric_vars))
+    rownames(assoc_out) <- factor_vars
+    colnames(assoc_out) <- numeric_vars
+    for (i in factor_vars) {
+      for (j in numeric_vars) {
+        row_index <- (eta_squared_df$factor_var == i & eta_squared_df$numeric_var == j)
+        assoc_out[i, j] <- eta_squared_df[row_index, "eta_squared"]
+      }
+    }
+    return(assoc_out)
+  }
   #TODO: Cramer's V calculations
+  # Calculations only between nominal variables
+  if (method == "cramers_v") {
+    is_factor <- sapply(data, class) == "factor"
+  }
 }
