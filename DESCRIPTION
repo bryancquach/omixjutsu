@@ -11,7 +11,7 @@ Authors@R:
   )
 Description: Provides functions for working with output from various software 
   that process or analyze omics data. 
-Depends: R (>= 3.6.3)
+Depends: R (>= 4.1.1)
 License: use_gpl3_license()
 Encoding: UTF-8
 LazyData: true
@@ -21,7 +21,7 @@ biocViews:
 Imports:
   ggplot2 (>= 3.3.2),
   ggridges (>= 0.5.2),
-  ggrepel,
+  ggrepel (>= 0.9.1),
   reshape2 (>= 1.4.4),
   DESeq2 (>= 1.26.0),
   IHW (>= 1.14.0),
@@ -29,4 +29,6 @@ Imports:
   RColorBrewer (>= 1.1-2),
   caret (>= 6.0-90),
   RcppEigen (>= 0.3.3.9.1),
-  Hmisc (>= 4.6-0)
+  Hmisc (>= 4.6-0),
+  lsr (>= 0.5.2),
+  rcompanion (>= 2.4.13)

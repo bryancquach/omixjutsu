@@ -317,6 +317,13 @@ plot_r2 <- function(pve_list,
 #' mistakenly treated as continuous variables. Nominal variables should be of class `factor` (not 
 #' `character`). Numeric variables should be of class `integer` or `numeric`.
 #'
+#' For Cramer's V calculations, nominal variables with many categories or in small sample size
+#' settings can inflate the strength of association. A bias correction can be applied as detailed
+#' in Bergsma (2013). 
+#'
+#' Bergsma, W. (2013). A bias-correction for Cramer's V and Tschuprow's T. Journal of Korean
+#' Statistical Society, 42(3), 323-238.
+#'
 #' @param data A data frame with columns from which to retrieve variables to compute associations.
 #' @param var_names A vector of variables names from the columns of `data` to consider.
 #' @param factor_vars A vector that includes the names of variables that should be converted to 
@@ -327,6 +334,8 @@ plot_r2 <- function(pve_list,
 #' values. This must be one of the strings `everything`, `all.obs`, `complete.obs`,
 #' `na.or.complete`, or `pairwise.complete.obs`. See the `cor` function documentation for details
 #' on what each value specifies. Only relevant for correlation metrics.
+#' @param bias_correction A boolean indicating whether bias correction for Cramer's V should be
+#' applied. Only relevant when `method` is `cramers_v`.
 #' @return A data frame with association metric values.
 #' @export
 assoc_matrix <- function(data, 
@@ -338,7 +347,8 @@ assoc_matrix <- function(data,
                            "everything", 
                            "all.obs", 
                            "complete.obs", 
-                           "na.or.complete")) {
+                           "na.or.complete"),
+                         bias_correction = F) {
   method <- match.arg(method)
   use <- match.arg(use)
   if (length(var_names) > 0) {
@@ -412,6 +422,7 @@ assoc_matrix <- function(data,
       stop("Error: no factor variables in `data`")
     }
     factor_vars <- colnames(data)[is_factor]
+    print(paste("Final variable set size:", length(is_numeric) + length(is_factor)))
     anova_pairs <- expand.grid(numeric_var = numeric_vars, factor_var = factor_vars)
     eta_squared_vec <- apply(
       anova_pairs, 
@@ -436,9 +447,40 @@ assoc_matrix <- function(data,
     }
     return(assoc_out)
   }
-  #TODO: Cramer's V calculations
   # Calculations only between nominal variables
   if (method == "cramers_v") {
-    is_factor <- sapply(data, class) == "factor"
+    is_factor <- which(sapply(data, class) == "factor")
+    print(paste("Final variable set size:", length(is_factor)))
+    if (length(is_factor) == 0) {
+      stop("Error: no factor variables in `data`")
+    }
+    factor_vars <- colnames(data)[is_factor]
+    factor_pairs <- expand.grid(factor_var1 = factor_vars, factor_var2 = factor_vars)
+    cramers_v_vec <- apply(
+      factor_pairs, 
+      1, 
+      function(x) {
+        cramers_v <- rcompanion::cramerV(
+          x = data[, x[1], drop = T], 
+          y = data[, x[2], drop = T], 
+          digits = 10, 
+          bias.correct = bias_correction
+        )
+        return(cramers_v)
+      },
+      simplify = T
+    )
+    cramers_v_df <- cbind(factor_pairs, cramers_v = cramers_v_vec)
+    # Reshape into a matrix
+    assoc_out <- matrix(NA, nrow = length(factor_vars), ncol = length(factor_vars))
+    rownames(assoc_out) <- factor_vars
+    colnames(assoc_out) <- factor_vars
+    for (i in factor_vars) {
+      for (j in factor_vars) {
+        row_index <- (cramers_v_df$factor_var1 == i & cramers_v_df$factor_var2 == j)
+        assoc_out[i, j] <- cramers_v_df[row_index, "cramers_v"]
+      }
+    }
+    return(assoc_out)
   }
 }
