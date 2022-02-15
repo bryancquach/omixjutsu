@@ -576,3 +576,96 @@ grouped_barplot <- function(data,
     )
   return(output_plot)
 }
+
+#' Heatmap grid
+#'
+#' Creates a heatmap based on a matrix of values.
+#'
+#' @param data A data frame or matrix of numeric values.
+#' @param digits An integer for how many digits to which to round cell values.
+#' @param text_size A numeric value for the cell value text size.
+#' @param legend_height A numeric for the height of the legend key in millimeters. 
+#' @param row_ids An optional string vector of row names to retain for plotting.
+#' @param col_ids An optional string vector of column names to retain for plotting.
+#' @param ggfill An object returned by the family of `scale_fill_*` functions for continuous values
+#' that defines the color fill for the cells of the heatmap.
+#' @param reorder_matrix A boolean indicating if the columns and rows should be reordered such that
+#' the diagonal cells equate to the same x and y axis labels.
+#' @param title A string for the plot title.
+#' @param x_title A string for the x-axis title.
+#' @param y_title A string for the y-axis title.
+#' @param xlab_pos The x-axis label position. One of "top", "bottom".
+#' @param ylab_pos The y-axis label position. One of "left", "right".
+#' @return A ggplot2 object
+#' @seealso \code{\link{assoc_matrix}}
+#' @export
+matrix_heatmap <- function(data,
+                           digits = 2,
+                           text_size = 4.5,
+                           legend_height = 20,
+                           row_ids = NULL,
+                           col_ids = NULL,
+                           ggfill = scale_fill_gradient2(
+                             name = "", 
+                             low = "steelblue4", 
+                             mid = "white", 
+                             high = "red4", 
+                             breaks = seq(-1, 1, 0.1), 
+                             limits = c(-1, 1)
+                           ),
+                           reorder_matrix = T,
+                           title = NULL,
+                           x_title = NULL,
+                           y_title = NULL,
+                           xlab_pos = c("bottom", "top"),
+                           ylab_pos = c("left", "right")) {
+  if (!is.null(row_ids)) {
+    if(!all(row_ids %in% rownames(data))) {
+      stop("Error: Not all `row_ids` in `data`")
+    } else {
+      data <- data[row_ids, , drop = F]
+    }
+  }
+  if (!is.null(col_ids)) {
+    if(!all(col_ids %in% colnames(data))) {
+      stop("Error: Not all `col_ids` in `data`")
+    } else {
+      data <- data[, col_ids, drop = F]
+    }
+  }
+  xlab_pos <- match.arg(xlab_pos)
+  ylab_pos <- match.arg(ylab_pos)
+  data <- as.data.frame(data)
+  measure_varnames <- colnames(data)
+  data$covariate1 <- rownames(data)
+  plot_data <- reshape2::melt(
+    data, 
+    id.vars = "covariate1", 
+    measure.vars = measure_varnames, 
+    variable.name = "covariate2"
+  )
+  if (reorder_matrix) {
+    plot_data$covariate1 <- reorder(plot_data$covariate1, -plot_data$value)
+    plot_data$covariate2 <- reorder(plot_data$covariate2, plot_data$value)
+  }
+  output_plot <- ggplot(plot_data, aes(y = covariate1, x = covariate2, fill = value)) +
+    geom_tile(colour = "white", height = 0.95, width = 0.95) +
+    geom_text(aes(label = round(value, digits)), size = text_size) +
+    ggfill +
+    labs(x = x_title, y = y_title, title = title) +
+    scale_x_discrete(position = xlab_pos) +
+    scale_y_discrete(position = ylab_pos) +
+    theme(
+      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), units = "cm"),
+      axis.text.x = element_text(size = 18, angle = 45, hjust = 1),
+      axis.text.y = element_text(size = 18),
+      title = element_text(size = 16),
+      legend.key.height = unit(legend_height, "mm"),
+      legend.text = element_text(size = 16), 
+      legend.title = element_text(size = 16)
+    )
+  if (xlab_pos == "top") {
+    output_plot <- output_plot + theme(axis.text.x = element_text(hjust = 0))
+  }
+  return(output_plot)
+}
