@@ -22,13 +22,13 @@
 #' @return A data frame of explanatory variables for regression.
 #' @seealso \code{\link{get_residual_matrix}}
 #' @export
-# TODO: reduce cyclomatic complexity by modularizing with private functions
 get_design_mat <- function(data,
                            var_names = NULL,
                            corr_cutoff = 0.75,
                            corr_method = c("spearman", "pearson"),
                            check_binary_vars = T,
                            strings_as_factors = T) {
+  # TODO: reduce cyclomatic complexity by modularizing with private functions
   if (corr_cutoff < 0 | corr_cutoff > 1) {
     stop("Error: 'corr_cutoff' must be in the range [0,1]")
   }
@@ -339,7 +339,6 @@ plot_r2 <- function(pve_list,
 #' applied. Only relevant when `method` is `cramers_v`.
 #' @return A data frame with association metric values.
 #' @export
-# TODO: reduce cyclomatic complexity by modularizing with private functions
 assoc_matrix <- function(data,
                          var_names = NULL,
                          factor_vars = NULL,
@@ -351,6 +350,7 @@ assoc_matrix <- function(data,
                            "complete.obs",
                            "na.or.complete"),
                          bias_correction = F) {
+  # TODO: reduce cyclomatic complexity by modularizing with private functions
   method <- match.arg(method)
   use <- match.arg(use)
   if (length(var_names) > 0) {
