@@ -160,8 +160,8 @@ ggpca <- function(data,
   row_vars <- rowVars(SummarizedExperiment::assay(data))
   keeper_rows <- order(row_vars, decreasing = T)[seq_len(min(ntop, length(row_vars)))]
   pca <- prcomp(
-    t(SummarizedExperiment::assay(data)[keeper_rows, ]), 
-    center = center, 
+    t(SummarizedExperiment::assay(data)[keeper_rows, ]),
+    center = center,
     scale. = scale
   )
   pct_var <- pca$sdev^2 / sum(pca$sdev^2)
@@ -217,7 +217,7 @@ ggpca <- function(data,
         data_min * 0.95
       },
       "0" = {
-        data_min - binsize
+        data_min - (diff(c(data_min, data_max)) * 0.05)
       }
     )
     axis_max <- switch(as.character(sign(data_max)),
@@ -228,7 +228,7 @@ ggpca <- function(data,
         data_max * 1.05
       },
       "0" = {
-        data_max + binsize
+        data_max + (diff(c(data_min, data_max)) * 0.05)
       }
     )
     ggout <- ggout +
@@ -551,7 +551,7 @@ grouped_barplot <- function(data,
   plot_data$var2 <- as.factor(plot_data$var2)
   if (is.null(fill)) {
     num_factors <- nlevels(plot_data$var2)
-    fill = brewer.pal(n = max(3, num_factors), name = "Spectral")[1:num_factors]
+    fill <- brewer.pal(n = max(3, num_factors), name = "Spectral")[1:num_factors]
   }
   output_plot <- ggplot(plot_data, aes(x = value, y = var1, fill = var2)) +
     geom_bar(
@@ -584,7 +584,7 @@ grouped_barplot <- function(data,
 #' @param data A data frame or matrix of numeric values.
 #' @param digits An integer for how many digits to which to round cell values.
 #' @param text_size A numeric value for the cell value text size.
-#' @param legend_height A numeric for the height of the legend key in millimeters. 
+#' @param legend_height A numeric for the height of the legend key in millimeters.
 #' @param row_ids An optional string vector of row names to retain for plotting.
 #' @param col_ids An optional string vector of column names to retain for plotting.
 #' @param ggfill An object returned by the family of `scale_fill_*` functions for continuous values
@@ -606,11 +606,11 @@ matrix_heatmap <- function(data,
                            row_ids = NULL,
                            col_ids = NULL,
                            ggfill = scale_fill_gradient2(
-                             name = "", 
-                             low = "steelblue4", 
-                             mid = "white", 
-                             high = "red4", 
-                             breaks = seq(-1, 1, 0.1), 
+                             name = "",
+                             low = "steelblue4",
+                             mid = "white",
+                             high = "red4",
+                             breaks = seq(-1, 1, 0.1),
                              limits = c(-1, 1)
                            ),
                            reorder_matrix = T,
@@ -620,14 +620,14 @@ matrix_heatmap <- function(data,
                            xlab_pos = c("bottom", "top"),
                            ylab_pos = c("left", "right")) {
   if (!is.null(row_ids)) {
-    if(!all(row_ids %in% rownames(data))) {
+    if (!all(row_ids %in% rownames(data))) {
       stop("Error: Not all `row_ids` in `data`")
     } else {
       data <- data[row_ids, , drop = F]
     }
   }
   if (!is.null(col_ids)) {
-    if(!all(col_ids %in% colnames(data))) {
+    if (!all(col_ids %in% colnames(data))) {
       stop("Error: Not all `col_ids` in `data`")
     } else {
       data <- data[, col_ids, drop = F]
@@ -639,9 +639,9 @@ matrix_heatmap <- function(data,
   measure_varnames <- colnames(data)
   data$covariate1 <- rownames(data)
   plot_data <- reshape2::melt(
-    data, 
-    id.vars = "covariate1", 
-    measure.vars = measure_varnames, 
+    data,
+    id.vars = "covariate1",
+    measure.vars = measure_varnames,
     variable.name = "covariate2"
   )
   if (reorder_matrix) {
@@ -661,7 +661,7 @@ matrix_heatmap <- function(data,
       axis.text.y = element_text(size = 18),
       title = element_text(size = 16),
       legend.key.height = unit(legend_height, "mm"),
-      legend.text = element_text(size = 16), 
+      legend.text = element_text(size = 16),
       legend.title = element_text(size = 16)
     )
   if (xlab_pos == "top") {

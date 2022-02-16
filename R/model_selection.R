@@ -22,6 +22,7 @@
 #' @return A data frame of explanatory variables for regression.
 #' @seealso \code{\link{get_residual_matrix}}
 #' @export
+# TODO: reduce cyclomatic complexity by modularizing with private functions
 get_design_mat <- function(data,
                            var_names = NULL,
                            corr_cutoff = 0.75,
@@ -296,7 +297,7 @@ plot_r2 <- function(pve_list,
   } else {
     output_plot <- output_plot +
       scale_color_manual(
-        values = point_color, 
+        values = point_color,
         labels = c(expression(r^2), expression("adjusted r"^2))
       )
   }
@@ -314,19 +315,19 @@ plot_r2 <- function(pve_list,
 #' nominal-continuous variable pairs. Pearson, spearman, and kendall correlations exclude nominal
 #' variables with >2 values. Variable exclusions are based on the variable type as defined in
 #' `data`, so these should be verified. Categorical variables with values coded as integers can be
-#' mistakenly treated as continuous variables. Nominal variables should be of class `factor` (not 
+#' mistakenly treated as continuous variables. Nominal variables should be of class `factor` (not
 #' `character`). Numeric variables should be of class `integer` or `numeric`.
 #'
 #' For Cramer's V calculations, nominal variables with many categories or in small sample size
 #' settings can inflate the strength of association. A bias correction can be applied as detailed
-#' in Bergsma (2013). 
+#' in Bergsma (2013).
 #'
 #' Bergsma, W. (2013). A bias-correction for Cramer's V and Tschuprow's T. Journal of Korean
 #' Statistical Society, 42(3), 323-238.
 #'
 #' @param data A data frame with columns from which to retrieve variables to compute associations.
 #' @param var_names A vector of variables names from the columns of `data` to consider.
-#' @param factor_vars A vector that includes the names of variables that should be converted to 
+#' @param factor_vars A vector that includes the names of variables that should be converted to
 #' factors. Must be in `data` or `var_names` if specified.
 #' @param method The type of association to calculate. One of `pearson` (default), `spearman`,
 #' `kendall`, `eta_squared`, `cramers_v`.
@@ -338,15 +339,16 @@ plot_r2 <- function(pve_list,
 #' applied. Only relevant when `method` is `cramers_v`.
 #' @return A data frame with association metric values.
 #' @export
-assoc_matrix <- function(data, 
+# TODO: reduce cyclomatic complexity by modularizing with private functions
+assoc_matrix <- function(data,
                          var_names = NULL,
                          factor_vars = NULL,
                          method = c("pearson", "spearman", "kendall", "eta_squared", "cramers_v"),
                          use = c(
-                           "pairwise.complete.obs", 
-                           "everything", 
-                           "all.obs", 
-                           "complete.obs", 
+                           "pairwise.complete.obs",
+                           "everything",
+                           "all.obs",
+                           "complete.obs",
                            "na.or.complete"),
                          bias_correction = F) {
   method <- match.arg(method)
@@ -361,7 +363,7 @@ assoc_matrix <- function(data,
     data <- data[, var_names]
   }
   if (!is.null(factor_vars)) {
-    if(!all(factor_vars %in% colnames(data))) {
+    if (!all(factor_vars %in% colnames(data))) {
       stop("Error: Not all `factor_vars` found in `data` (or `var_names` if not NULL)")
     }
     for (i in factor_vars) {
@@ -425,8 +427,8 @@ assoc_matrix <- function(data,
     print(paste("Final variable set size:", length(is_numeric) + length(is_factor)))
     anova_pairs <- expand.grid(numeric_var = numeric_vars, factor_var = factor_vars)
     eta_squared_vec <- apply(
-      anova_pairs, 
-      1, 
+      anova_pairs,
+      1,
       function(x) {
         formula_str <- paste0(x[1], "~", x[2])
         aov_fit <- aov(as.formula(formula_str), data = data)
@@ -457,13 +459,13 @@ assoc_matrix <- function(data,
     factor_vars <- colnames(data)[is_factor]
     factor_pairs <- expand.grid(factor_var1 = factor_vars, factor_var2 = factor_vars)
     cramers_v_vec <- apply(
-      factor_pairs, 
-      1, 
+      factor_pairs,
+      1,
       function(x) {
         cramers_v <- rcompanion::cramerV(
-          x = data[, x[1], drop = T], 
-          y = data[, x[2], drop = T], 
-          digits = 10, 
+          x = data[, x[1], drop = T],
+          y = data[, x[2], drop = T],
+          digits = 10,
           bias.correct = bias_correction
         )
         return(cramers_v)
