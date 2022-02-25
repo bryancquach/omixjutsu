@@ -10,7 +10,7 @@ rint(data)
 \item{data}{A numeric vector.}
 }
 \value{
-A numeric vector.
+A numeric vector of normalized values.
 }
 \description{
 Apply the rank inverse-normal transform (RINT) to a vector.
