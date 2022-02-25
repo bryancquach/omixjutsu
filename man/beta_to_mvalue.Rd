@@ -4,14 +4,21 @@
 \alias{beta_to_mvalue}
 \title{DNA methylation M-values}
 \usage{
-beta_to_mvalue(data)
+beta_to_mvalue(data, min_value = -Inf, max_value = Inf)
 }
 \arguments{
 \item{data}{A numeric vector or matrix of DNAm array beta intensity values.}
+
+\item{min_value}{An optional numeric value denoting the min M-value allowed. Any M-values that
+are less than this value will be set to this value.}
+
+\item{max_value}{An optional numeric value denoting the max M-value allowed. Any M-values that
+exceed this value will be set to this value.}
 }
 \value{
 A numeric vector or matrix of M-values.
 }
 \description{
-Apply M-value transform to DNA methylation (DNAm) array beta intensity values.
+Apply M-value transform to DNA methylation (DNAm) array beta intensity values. Provides range
+limit options to prevent calculation of -Inf and Inf values.
 }
