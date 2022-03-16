@@ -157,7 +157,7 @@ ggpca <- function(data,
                   return_data = F) {
   pc_x_name <- paste0("PC", pc_x)
   pc_y_name <- paste0("PC", pc_y)
-  row_vars <- rowVars(SummarizedExperiment::assay(data))
+  row_vars <- matrixStats::rowVars(SummarizedExperiment::assay(data))
   keeper_rows <- order(row_vars, decreasing = T)[seq_len(min(ntop, length(row_vars)))]
   pca <- prcomp(
     t(SummarizedExperiment::assay(data)[keeper_rows, ]),
