@@ -523,6 +523,9 @@ pval_qqplot <- function(pvalues, outliers = NULL, sig_cutoff = 0.05, plot_lambda
 #' @param x_title A string denoting the x-axis title.
 #' @param y_title A string denoting the y-axis title.
 #' @param legend_title A string denoting the legend title. Should correspond to `y_var`.
+#' @param use_na One of "never", "ifany", or "always" to denote whether NA values should be
+#' included in the frequency calculations.
+#' @param use_proportions A boolean denoting if proportions should be used instead of frequencies.
 #' @return A ggplot object.
 #' @export
 grouped_barplot <- function(data,
@@ -535,7 +538,9 @@ grouped_barplot <- function(data,
                             line_color = "black",
                             x_title = NULL,
                             y_title = NULL,
-                            legend_title = NULL) {
+                            legend_title = NULL,
+                            use_na = c("ifany", "never", "always"),
+                            use_proportions = F) {
   if (!is.null(rm_ids)) {
     if (!all(rm_ids %in% rownames(data))) {
       warning("Not all elements in 'rm_ids' found in 'data'")
@@ -543,8 +548,19 @@ grouped_barplot <- function(data,
     keepers <- which(!rownames(data) %in% rm_ids)
     data <- data[keepers, ]
   }
+  use_na <- match.arg(use_na)
+  freq_table <- table(data[, x_var], data[, y_var], useNA = use_na)
+  if(use_proportions) {
+    freq_table <- apply(
+      freq_table,
+      2,
+      function(x) {
+        x / sum(x)
+      }
+    )
+  }
   plot_data <- reshape2::melt(
-    table(data[, x_var], data[, y_var]),
+    freq_table,
     varnames = c("var1", "var2")
   )
   plot_data$var1 <- as.factor(plot_data$var1)

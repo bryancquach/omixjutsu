@@ -15,7 +15,9 @@ grouped_barplot(
   line_color = "black",
   x_title = NULL,
   y_title = NULL,
-  legend_title = NULL
+  legend_title = NULL,
+  use_na = c("ifany", "never", "always"),
+  use_proportions = F
 )
 }
 \arguments{
@@ -38,6 +40,11 @@ grouped_barplot(
 \item{y_title}{A string denoting the y-axis title.}
 
 \item{legend_title}{A string denoting the legend title. Should correspond to \code{y_var}.}
+
+\item{use_na}{One of "never", "ifany", or "always" to denote whether NA values should be
+included in the frequency calculations.}
+
+\item{use_proportions}{A boolean denoting if proportions should be used instead of frequencies.}
 }
 \value{
 A ggplot object.
