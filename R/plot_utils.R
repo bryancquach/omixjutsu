@@ -543,7 +543,7 @@ grouped_barplot <- function(data,
     keepers <- which(!rownames(data) %in% rm_ids)
     data <- data[keepers, ]
   }
-  plot_data <- melt(
+  plot_data <- reshape2::melt(
     table(data[, x_var], data[, y_var]),
     varnames = c("var1", "var2")
   )
