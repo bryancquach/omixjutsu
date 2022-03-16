@@ -26,7 +26,7 @@
 #' @seealso \code{\link{hist_boxplot2}}
 #' @export
 hist_boxplot <- function(data,
-                         binsize = diff(range(data[, 1])) / 50,
+                         binsize = diff(range(data[, 1], na.rm = T)) / 50,
                          hist_fill = "gray10",
                          hist_alpha = 0.75,
                          box_fill = "goldenrod",
@@ -276,7 +276,7 @@ ggpca <- function(data,
 #' @seealso \code{\link{hist_boxplot}}
 #' @export
 hist_boxplot2 <- function(data,
-                          binsize = diff(range(data[, 1])) / 25,
+                          binsize = diff(range(data[, 1], na.rm = T)) / 25,
                           colors = NULL,
                           hist_alpha = 0.75,
                           box_fill = "gray50",
