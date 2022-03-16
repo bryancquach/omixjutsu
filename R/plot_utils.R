@@ -551,7 +551,7 @@ grouped_barplot <- function(data,
   plot_data$var2 <- as.factor(plot_data$var2)
   if (is.null(fill)) {
     num_factors <- nlevels(plot_data$var2)
-    fill <- brewer.pal(n = max(3, num_factors), name = "Spectral")[1:num_factors]
+    fill <- RColorBrewer::brewer.pal(n = max(3, num_factors), name = "Spectral")[1:num_factors]
   }
   output_plot <- ggplot(plot_data, aes(x = value, y = var1, fill = var2)) +
     geom_bar(
