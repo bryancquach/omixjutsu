@@ -390,7 +390,7 @@ pval_histogram <- function(pvalues, bin_width = 0.025, bin_fill = "gray10", alph
       color = "white",
       fill = bin_fill
     ) +
-    xlim(0, 1) +
+    xlim(-0.05, 1) +
     labs(y = "Frequency", x = "p-value") +
     theme(
       plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
