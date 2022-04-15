@@ -64,13 +64,7 @@ per_sample_count_distribution.DGEList <- function(dge_data,
                                                   point_size = 2.5,
                                                   point_alpha = 1,
                                                   y_lim = NULL) {
-  if (normalized) {
-    scaling_factor <- dge_data$samples$lib.size * dge_data$samples$norm.factors
-    norm_counts <- t(t(dge_data$counts) / scaling_factor) * mean(scaling_factor)
-    log_counts <- log10(norm_counts + 1)
-  } else {
-    log_counts <- log10(dge_data$counts + 1)
-  }
+  log_counts <- log10(counts(dge_data, normalized = normalized) + 1)
   output_plot <- per_sample_count_distribution.matrix(
     data = log_counts,
     point_size = point_size,

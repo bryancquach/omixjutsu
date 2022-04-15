@@ -31,4 +31,6 @@ Imports:
   RcppEigen (>= 0.3.3.9.1),
   Hmisc (>= 4.6-0),
   lsr (>= 0.5.2),
-  rcompanion (>= 2.4.13)
+  rcompanion (>= 2.4.13),
+  BiocGenerics(>= 0.7.5),
+  edgeR(>= 3.34.0)
