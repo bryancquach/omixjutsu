@@ -515,26 +515,29 @@ volcano_plot.data.frame <- function(data,
   return(output_plot)
 }
 
-#' Plot per sample count distribution
-#'
 #' Plot feature count distribution summary statistics per sample.
 #'
 #' Plots the 25th, 50th, and 75th percentil of the feature count distribution for each sample.
 #'
-#' @param dds A DESeqDataSet object.
+#' @title Plot per sample count distribution
+#' @param object A DESeqDataSet, DGEList, or numeric matrix object.
 #' @param point_size Plot point size.
 #' @param point_alpha Plot point alpha value.
 #' @param y_lim Plot y-axis range.
 #' @return A ggplot object.
 #' @export
-per_sample_count_distribution <- function(dds,
-                                          normalized = T,
-                                          point_size = 2.5,
-                                          point_alpha = 1,
-                                          y_lim = NULL) {
-  log_counts <- log10(DESeq2::counts(dds, normalized = normalized) + 1)
+per_sample_count_distribution <- function(object, ...) {
+  UseMethod("per_sample_count_distribution", object)
+}
+
+#' @rdname per_sample_count_distribution
+#' @export
+per_sample_count_distribution.matrix <- function(data,
+                                                 point_size = 2.5,
+                                                 point_alpha = 1,
+                                                 y_lim = NULL) {
   plot_data <- apply(
-    log_counts,
+    data,
     2,
     function(col_data) {
       quartiles <- quantile(col_data, probs = c(0.25, 0.5, 0.75))

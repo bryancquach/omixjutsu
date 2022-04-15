@@ -35,67 +35,47 @@ low_expression_filter.DGEList <- function(dge_data,
   return(dge_data[rownames(filtered_count_matrix), ])
 }
 
-#' Plot per sample count distribution
-#'
-#' Plot feature count distribution summary statistics per sample.
-#'
-#' Plots the 25th, 50th, and 75th percentil of the feature count distribution for each sample.
-#'
-#' @param dds A DESeqDataSet object.
-#' @param point_size Plot point size.
-#' @param point_alpha Plot point alpha value.
-#' @param y_lim Plot y-axis range.
-#' @return A ggplot object.
+#' @title Get counts from DGEList object
+#' @param dge_data A DGEList object.
+#' @param normalized A boolean denoting if counts should be normalized.
+#' @return A numeric matrix.
 #' @export
-per_sample_count_distribution <- function(dds,
-                                          normalized = T,
-                                          point_size = 2.5,
-                                          point_alpha = 1,
-                                          y_lim = NULL) {
-  log_counts <- log10(DESeq2::counts(dds, normalized = normalized) + 1)
-  plot_data <- apply(
-    log_counts,
-    2,
-    function(col_data) {
-      quartiles <- quantile(col_data, probs = c(0.25, 0.5, 0.75))
-      names(quartiles) <- c("lower_quartile", "median", "upper_quartile")
-      return(quartiles)
+counts.DGEList <- function(object, normalized = F) {
+  if (normalized) {
+    if (all(object$samples$norm.factors == 1)) {
+      warning("All norm factors are 1. Have you called `calcNormFactors` on this DGEList object?")
     }
-  )
-  plot_data <- as.data.frame(t(plot_data))
-  plot_data <- plot_data[order(plot_data$median), ]
-  plot_data$x <- seq_len(nrow(plot_data))
-  plot_data <- reshape2::melt(
-    plot_data,
-    measure.vars = c("lower_quartile", "median", "upper_quartile")
-  )
-  plot_data$variable <- factor(
-    plot_data$variable,
-    levels = c("upper_quartile", "median", "lower_quartile")
-  )
-  output_plot <- ggplot(
-    plot_data,
-    aes(x = x, y = value, shape = variable, col = variable, fill = variable)
-  ) +
-    geom_point(size = point_size, alpha = point_alpha) +
-    scale_shape_manual(values = c(24, 21, 25)) +
-    scale_fill_manual(values = c("red3", "gray20", "steelblue3")) +
-    scale_color_manual(values = c("red3", "gray20", "steelblue3")) +
-    labs(x = "Sample", y = "log10(counts + 1)") +
-    theme(
-      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-      legend.title = element_blank(),
-      legend.text = element_text(size = 16),
-      title = element_text(size = 18),
-      axis.text = element_text(size = 18),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.title = element_text(size = 18),
-      axis.title.y = element_text(vjust = 3),
-      axis.title.x = element_text(vjust = -1)
-    )
-  if (!is.null(y_lim)) {
-    output_plot <- output_plot + ylim(y_lim)
+    scaling_factor <- object$samples$lib.size * object$samples$norm.factors
+    norm_counts <- t(t(object$counts) / scaling_factor) * mean(scaling_factor)
+    return(norm_counts)
+  } else {
+    return(object$counts)
   }
+}
+
+#' @importFrom BiocGenerics counts
+#' @export
+setMethod("counts", signature(object = "DGEList"), counts.DGEList)
+
+#' @rdname per_sample_count_distribution
+#' @export
+per_sample_count_distribution.DGEList <- function(dge_data,
+                                                  normalized = T,
+                                                  point_size = 2.5,
+                                                  point_alpha = 1,
+                                                  y_lim = NULL) {
+  if (normalized) {
+    scaling_factor <- dge_data$samples$lib.size * dge_data$samples$norm.factors
+    norm_counts <- t(t(dge_data$counts) / scaling_factor) * mean(scaling_factor)
+    log_counts <- log10(norm_counts + 1)
+  } else {
+    log_counts <- log10(dge_data$counts + 1)
+  }
+  output_plot <- per_sample_count_distribution.matrix(
+    data = log_counts,
+    point_size = point_size,
+    point_alpha = point_alpha,
+    y_lim = y_lim
+  )
   return(output_plot)
 }

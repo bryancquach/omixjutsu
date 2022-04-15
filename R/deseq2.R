@@ -398,7 +398,17 @@ ma_plot.DESeqResults <- function(dds_results,
     basemean_colname = "baseMean",
     fc_colname = "log2FoldChange",
     adj_pvalue_colname = "padj",
-    outlier_index = outlier_index
+    outlier_index = outlier_index,
+    sig_cutoff = sig_cutoff,
+    sig_up_color = sig_up_color,
+    sig_down_color = sig_down_color,
+    nonsig_color = nonsig_color,
+    outlier_color = outlier_color,
+    sig_alpha = sig_alpha,
+    nonsig_alpha = nonsig_alpha,
+    sig_size = sig_size,
+    nonsig_size = nonsig_size,
+    outlier_size = outlier_size
   )
   return(output_plot)
 }
@@ -428,72 +438,37 @@ volcano_plot.DESeqResults <- function(dds_results,
     fc_colname = "log2FoldChange",
     pvalue_colname = "pvalue",
     adj_pvalue_colname = "padj",
-    outlier_index = outlier_index
+    outlier_index = outlier_index,
+    sig_cutoff = sig_cutoff,
+    sig_up_color = sig_up_color,
+    sig_down_color = sig_down_color,
+    nonsig_color = nonsig_color,
+    outlier_color = outlier_color,
+    sig_alpha = sig_alpha,
+    nonsig_alpha = nonsig_alpha,
+    sig_size = sig_size,
+    nonsig_size = nonsig_size,
+    outlier_size = outlier_size
   )
   return(output_plot)
 }
 
-#' Plot per sample count distribution
-#'
-#' Plot feature count distribution summary statistics per sample.
-#'
-#' Plots the 25th, 50th, and 75th percentil of the feature count distribution for each sample.
-#'
-#' @param dds A DESeqDataSet object.
-#' @param point_size Plot point size.
-#' @param point_alpha Plot point alpha value.
-#' @param y_lim Plot y-axis range.
-#' @return A ggplot object.
+#' @rdname per_sample_count_distribution
+#' @param normalized A boolean denoting whether the plotted counts should not be normalized
+#' (`FALSE`) or normalized by size/normalization factors (`TRUE`).
+#' factors.
 #' @export
-per_sample_count_distribution <- function(dds,
-                                          normalized = T,
-                                          point_size = 2.5,
-                                          point_alpha = 1,
-                                          y_lim = NULL) {
+per_sample_count_distribution.DESeqDataSet <- function(dds,
+                                                       normalized = T,
+                                                       point_size = 2.5,
+                                                       point_alpha = 1,
+                                                       y_lim = NULL) {
   log_counts <- log10(DESeq2::counts(dds, normalized = normalized) + 1)
-  plot_data <- apply(
-    log_counts,
-    2,
-    function(col_data) {
-      quartiles <- quantile(col_data, probs = c(0.25, 0.5, 0.75))
-      names(quartiles) <- c("lower_quartile", "median", "upper_quartile")
-      return(quartiles)
-    }
+  output_plot <- per_sample_count_distribution.matrix(
+    data = log_counts,
+    point_size = point_size,
+    point_alpha = point_alpha,
+    y_lim = y_lim
   )
-  plot_data <- as.data.frame(t(plot_data))
-  plot_data <- plot_data[order(plot_data$median), ]
-  plot_data$x <- seq_len(nrow(plot_data))
-  plot_data <- reshape2::melt(
-    plot_data,
-    measure.vars = c("lower_quartile", "median", "upper_quartile")
-  )
-  plot_data$variable <- factor(
-    plot_data$variable,
-    levels = c("upper_quartile", "median", "lower_quartile")
-  )
-  output_plot <- ggplot(
-    plot_data,
-    aes(x = x, y = value, shape = variable, col = variable, fill = variable)
-  ) +
-    geom_point(size = point_size, alpha = point_alpha) +
-    scale_shape_manual(values = c(24, 21, 25)) +
-    scale_fill_manual(values = c("red3", "gray20", "steelblue3")) +
-    scale_color_manual(values = c("red3", "gray20", "steelblue3")) +
-    labs(x = "Sample", y = "log10(counts + 1)") +
-    theme(
-      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-      legend.title = element_blank(),
-      legend.text = element_text(size = 16),
-      title = element_text(size = 18),
-      axis.text = element_text(size = 18),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.title = element_text(size = 18),
-      axis.title.y = element_text(vjust = 3),
-      axis.title.x = element_text(vjust = -1)
-    )
-  if (!is.null(y_lim)) {
-    output_plot <- output_plot + ylim(y_lim)
-  }
   return(output_plot)
 }
