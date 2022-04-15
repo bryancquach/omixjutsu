@@ -1,248 +1,45 @@
 # Tools for differential gene expression (DGE) analysis using DESeq2.
 # Author: Bryan Quach (bryancquach@gmail.com)
 
-#' Merge tximport objects
-#'
-#' Combines multiple tximport objects into a single tximport object.
-#'
-#' Merges tximport objects to create a single tximport object with a common subset of genes across
-#' all of the input objects. Also creates a categorical variable to distinguish the source object
-#' of each sample. Requires all row and sample names to be unique.
-#'
-#' @param txi_list A list where each element is a tximport object.
-#' @return A list with the following components:
-#' * `txi` A tximport object.
-#' * `sample_source` A categorical variable for each sample that corresponds to the source
-#' tximport object for the sample.
+#' @rdname low_expression_filter
+#' @return A filtered DESeqDataSet object if a DESeqDataSet object is provided as input.
 #' @export
-merge_txi <- function(txi_list) {
-  txi_data <- list(txi = NULL, sample_source = NULL)
-  if (length(txi_list) < 2) {
-    warning("Less than 2 tximport objects provided in list")
-    txi_data$txi <- txi_list[[1]]
-    txi_data$sample_source <- rep(1, ncol(txi_list[[1]]$counts))
-    names(txi_data$sample_source) <- colnames(txi_list[[1]]$counts)
-    return(txi_data)
+low_expression_filter.DESeqDataSet <- function(dds,
+                                               value_cutoff,
+                                               min_sample_fraction = NULL,
+                                               threshold_variable = NULL,
+                                               use_min_fraction = T,
+                                               approximate = F) {
+  if (is.null(min_sample_fraction) & is.null(threshold_variable)) {
+    stop("Error: either 'min_sample_fraction' or 'threshold_variable' must not be NULL")
   }
-  counts_from_abundance <- sapply(
-    txi_list,
-    function(txi) {
-      return(txi$countsFromAbundance)
-    }
-  )
-  counts_from_abundance <- unique(counts_from_abundance)
-  if (length(counts_from_abundance) != 1) {
-    warning("'CountsFromAbundance' values not consistent across objects")
-  }
-  has_dup_samples <- sapply(
-    txi_list,
-    function(txi) {
-      has_dups <- any(
-        c(
-          ncol(txi$counts) != length(unique(colnames(txi$counts))),
-          ncol(txi$abundance) != length(unique(colnames(txi$abundance))),
-          ncol(txi$length) != length(unique(colnames(txi$length)))
-        )
-      )
-      return(has_dups)
-    },
-    simplify = F
-  )
-  if (any(unlist(has_dup_samples))) {
-    stop("Error: column names not unique within a tximport object")
-  }
-  has_inconsistent_samples <- sapply(
-    txi_list,
-    function(txi) {
-      sample_ids <- c(colnames(txi$counts), colnames(txi$abundance), colnames(txi$length))
-      id_freq <- table(sample_ids)
-      return(any(id_freq < 3))
-    },
-    simplify = F
-  )
-  if (any(unlist(has_inconsistent_samples))) {
-    stop("Error: column names not consistent within a tximport object")
-  }
-  txi_list <- sapply(
-    txi_list,
-    function(txi) {
-      sorted_txi <- txi
-      sorted_txi$counts <- txi$counts[order(rownames(txi$counts)), ]
-      sorted_txi$abundance <- txi$abundance[order(rownames(txi$abundance)), ]
-      sorted_txi$length <- txi$length[order(rownames(txi$length)), ]
-      return(sorted_txi)
-    },
-    simplify = F
-  )
-  # Counts processing
-  feature_names_list <- sapply(
-    txi_list,
-    function(txi) {
-      return(rownames(txi$counts))
-    }
-  )
-  are_unique_ids <- sapply(
-    feature_names_list,
-    function(ids) {
-      return(length(ids) == length(unique(ids)))
-    }
-  )
-  if (!all(unlist(are_unique_ids))) {
-    stop("Error: Row names in 'counts' must all be unique")
-  }
-  feature_freq <- table(unlist(feature_names_list))
-  if (any(feature_freq < length(txi_list))) {
-    warning("Row names not consistent across 'counts' elements")
-  }
-  intersection_index <- which(feature_freq == length(txi_list))
-  intersection_ids <- names(feature_freq)[intersection_index]
-  counts_list <- sapply(
-    txi_list,
-    function(txi) {
-      txi$counts[intersection_ids, ]
-    },
-    simplify = F
-  )
-  counts_merged <- do.call(cbind, counts_list)
-  # Abundance processing
-  feature_names_list <- sapply(
-    txi_list,
-    function(txi) {
-      return(rownames(txi$abundance))
-    }
-  )
-  are_unique_ids <- sapply(
-    feature_names_list,
-    function(ids) {
-      return(length(ids) == length(unique(ids)))
-    }
-  )
-  if (!all(unlist(are_unique_ids))) {
-    stop("Error: Row names in 'abundance' must all be unique")
-  }
-  feature_freq <- table(unlist(feature_names_list))
-  if (any(feature_freq < length(txi_list))) {
-    warning("Row names not consistent across 'abundance' elements")
-  }
-  intersection_index <- which(feature_freq == length(txi_list))
-  intersection_ids <- names(feature_freq)[intersection_index]
-  abundance_list <- sapply(
-    txi_list,
-    function(txi) {
-      txi$abundance[intersection_ids, ]
-    },
-    simplify = F
-  )
-  abundance_merged <- do.call(cbind, abundance_list)
-  # Length processing
-  feature_names_list <- sapply(
-    txi_list,
-    function(txi) {
-      return(rownames(txi$length))
-    }
-  )
-  are_unique_ids <- sapply(
-    feature_names_list,
-    function(ids) {
-      return(length(ids) == length(unique(ids)))
-    }
-  )
-  if (!all(unlist(are_unique_ids))) {
-    stop("Error: Row names in 'length' must all be unique")
-  }
-  feature_freq <- table(unlist(feature_names_list))
-  if (any(feature_freq < length(txi_list))) {
-    warning("Row names not consistent across 'length' objects")
-  }
-  intersection_index <- which(feature_freq == length(txi_list))
-  intersection_ids <- names(feature_freq)[intersection_index]
-  length_list <- sapply(
-    txi_list,
-    function(txi) {
-      txi$length[intersection_ids, ]
-    },
-    simplify = F
-  )
-  length_merged <- do.call(cbind, length_list)
-  # Create labels for sample txi source
-  txi_num_samples <- sapply(
-    txi_list,
-    function(txi) {
-      return(ncol(txi$counts))
-    },
-    simplify = F
-  )
-  sample_labels <- sapply(
-    seq_len(length(txi_num_samples)),
-    function(label) {
-      rep(x = label, times = txi_num_samples[[label]])
-    }
-  )
-  sample_labels <- unlist(sample_labels)
-  # Create new tximport object
-  final_txi <- list(
-    abundance = abundance_merged,
-    counts = counts_merged,
-    length = length_merged,
-    countsFromAbundance = counts_from_abundance
-  )
-  txi_data$txi <- final_txi
-  txi_data$sample_source <- sample_labels
-  names(txi_data$sample_source) <- colnames(txi_data$txi$counts)
-  return(txi_data)
-}
-
-#' Subsets the tables of a tximport object
-#'
-#' Subsets tximport tables using specified IDs.
-#'
-#' Uses a user-specified list of row or column names to subset the `counts`, `abundance`, and
-#' `length` elements of the tximport object. Orders the subset according to the order in the
-#' user-specified list.
-#'
-#' @param txi The tximport object to subset.
-#' @param ids The list of row or column indices/names to use for subsetting.
-#' @param dimensions The dimenions to subset. `1` for rows and `2` for columns.
-#' @return A tximport object.
-#' @export
-subset_txi <- function(txi, ids, dimension) {
-  if (!dimension %in% c(1, 2)) {
-    stop("Error: 'dimension' must be '1' (row) or '2' (column)")
-  }
-  index <- ids
-  if (is.factor(index)) {
-    index <- as.character(index)
-  }
-  if (is.character(index)) {
-    if (dimension == 1) {
-      if (sum(rownames(txi$counts) %in% index) != length(index)) {
-        stop("IDs missing from txi object")
-      }
-      index <- match(x = index, table = rownames(txi$counts))
+  count_matrix <- DESeq2::counts(dds, normalized = F)
+  if (is.null(min_sample_fraction)) {
+    pheno_data <- SummarizedExperiment::colData(dds)
+    variable_freq <- table(pheno_data[, threshold_variable])
+    variable_fraction <- variable_freq / nrow(pheno_data)
+    if (use_min_fraction) {
+      sample_cutoff <- min(variable_fraction)
     } else {
-      if (sum(colnames(txi$counts) %in% index) != length(index)) {
-        stop("IDs missing from txi object")
-      }
-      index <- match(x = index, table = colnames(txi$counts))
+      sample_cutoff <- max(variable_fraction)
     }
-  }
-  txi_subset <- txi
-  if (dimension == 1) {
-    txi_subset$counts <- txi_subset$counts[index, ]
-    txi_subset$abundance <- txi_subset$abundance[index, ]
-    txi_subset$length <- txi_subset$length[index, ]
   } else {
-    txi_subset$counts <- txi_subset$counts[, index]
-    txi_subset$abundance <- txi_subset$abundance[, index]
-    txi_subset$length <- txi_subset$length[, index]
+    sample_cutoff <- min_sample_fraction
   }
-  return(txi_subset)
+  filtered_count_matrix <- low_expression_filter.matrix(
+    object = count_matrix,
+    value_cutoff = value_cutoff,
+    sample_cutoff = sample_cutoff,
+    approximate = approximate
+  )
+  return(dds[rownames(filtered_count_matrix), ])
 }
 
-#' Filter lowly expressed features from a DESeq2DataSet
+#' Filter lowly expressed features from a DESeq2DataSet (deprecated)
 #'
 #' Removes expression features below a given threshold from a DESeq2DataSet object.
 #'
+#' Included for backwards compatibility only. Use `low_expression_filter` instead.
 #' Filters out features considered lowly expressed from a DDS object using a count threshold and
 #' sample proportion set by the user. The sample proportion can also be estimated by calculating
 #' proportions of values from a binary variable specified by the user.

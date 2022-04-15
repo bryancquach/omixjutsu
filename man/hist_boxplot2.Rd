@@ -6,7 +6,7 @@
 \usage{
 hist_boxplot2(
   data,
-  binsize = diff(range(data[, 1]))/25,
+  binsize = diff(range(data[, 1], na.rm = T))/25,
   colors = NULL,
   hist_alpha = 0.75,
   box_fill = "gray50",

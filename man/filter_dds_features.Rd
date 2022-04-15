@@ -2,7 +2,7 @@
 % Please edit documentation in R/deseq2.R
 \name{filter_dds_features}
 \alias{filter_dds_features}
-\title{Filter lowly expressed features from a DESeq2DataSet}
+\title{Filter lowly expressed features from a DESeq2DataSet (deprecated)}
 \usage{
 filter_dds_features(
   dds,
@@ -36,6 +36,7 @@ A DDS object.
 Removes expression features below a given threshold from a DESeq2DataSet object.
 }
 \details{
+Included for backwards compatibility only. Use \code{low_expression_filter} instead.
 Filters out features considered lowly expressed from a DDS object using a count threshold and
 sample proportion set by the user. The sample proportion can also be estimated by calculating
 proportions of values from a binary variable specified by the user.
