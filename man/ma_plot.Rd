@@ -9,20 +9,6 @@
 \method{ma_plot}{DESeqResults}(
   dds_results,
   outliers = NULL,
-  sig_cutoff,
-  sig_up_color,
-  sig_down_color,
-  nonsig_color,
-  outlier_color,
-  sig_alpha,
-  nonsig_alpha,
-  sig_size,
-  nonsig_size,
-  outlier_size
-)
-
-ma_plot(
-  object,
   sig_cutoff = 0.05,
   sig_up_color = "red4",
   sig_down_color = "steelblue3",
@@ -32,9 +18,10 @@ ma_plot(
   nonsig_alpha = 0.4,
   sig_size = 3,
   nonsig_size = 2,
-  outlier_size = sig_size * 2.5,
-  ...
+  outlier_size = sig_size * 2.5
 )
+
+ma_plot(object, ...)
 
 \method{ma_plot}{data.frame}(
   data,
@@ -42,16 +29,16 @@ ma_plot(
   fc_colname,
   adj_pvalue_colname,
   outlier_index = NULL,
-  sig_cutoff,
-  sig_up_color,
-  sig_down_color,
-  nonsig_color,
-  outlier_color,
-  sig_alpha,
-  nonsig_alpha,
-  sig_size,
-  nonsig_size,
-  outlier_size
+  sig_cutoff = 0.05,
+  sig_up_color = "red4",
+  sig_down_color = "steelblue3",
+  nonsig_color = "gray60",
+  outlier_color = "goldenrod3",
+  sig_alpha = 0.8,
+  nonsig_alpha = 0.4,
+  sig_size = 3,
+  nonsig_size = 2,
+  outlier_size = sig_size * 2.5
 )
 }
 \arguments{

@@ -16,14 +16,7 @@
   approximate = F
 )
 
-low_expression_filter(
-  object,
-  value_cutoff,
-  min_sample_fraction = NULL,
-  threshold_variable = NULL,
-  use_min_fraction = T,
-  approximate = F
-)
+low_expression_filter(object, ...)
 
 \method{low_expression_filter}{matrix}(object, value_cutoff, sample_cutoff, approximate)
 

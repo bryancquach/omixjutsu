@@ -339,7 +339,6 @@ ma_plot.data.frame <- function(data,
     sig_class = "nonsignificant",
     stringsAsFactors = F
   )
-  rownames(plot_data) <- rownames(data)
   is_upregulated <- (plot_data$adj_pvalue < sig_cutoff & plot_data$fold_change >= 0)
   is_downregulated <- (plot_data$adj_pvalue < sig_cutoff & plot_data$fold_change < 0)
   sig_outlier_index <- intersect(which(plot_data$adj_pvalue < sig_cutoff), outlier_index)
@@ -406,49 +405,61 @@ ma_plot.data.frame <- function(data,
   return(output_plot)
 }
 
-#' Volcano plot
-#'
 #' Plot log fold change vs log p-value.
 #'
 #' Plots the log2 fold change vs -log10 pvalue for features tested for differential expression.
 #'
+#' @title Volcano plot
 #' @inheritParams ma_plot
 #' @return A ggplot object.
 #' @export
-volcano_plot <- function(dds_results,
-                         outliers = NULL,
-                         sig_cutoff = 0.05,
-                         sig_up_color = "red4",
-                         sig_down_color = "steelblue3",
-                         nonsig_color = "gray60",
-                         outlier_color = "goldenrod3",
-                         sig_alpha = 0.8,
-                         nonsig_alpha = 0.4,
-                         sig_size = 3,
-                         nonsig_size = 2,
-                         outlier_size = sig_size * 2.5) {
-  if (!all(outliers %in% rownames(dds_results))) {
-    warnings("Not all outliers present in 'dds_results'")
+volcano_plot <- function(object, ...) {
+  UseMethod("volcano_plot", object)
+}
+
+#' @rdname volcano_plot
+#' @param fc_colname A string denoting the column in `data` that contains the log2 fold changes.
+#' @param pvalue_colname A string denoting the column in `data` that contains the nominal p-values.
+#' @param adj_pvalue_colname A string denoting the column in `data` that contains the adjusted
+#' p-values.
+#' @param outlier_index A numeric vector denoting row indices of outliers.
+#' @export
+volcano_plot.data.frame <- function(data,
+                                    fc_colname,
+                                    pvalue_colname,
+                                    adj_pvalue_colname,
+                                    outlier_index = NULL,
+                                    sig_cutoff = 0.05,
+                                    sig_up_color = "red4",
+                                    sig_down_color = "steelblue3",
+                                    nonsig_color = "gray60",
+                                    outlier_color = "goldenrod3",
+                                    sig_alpha = 0.8,
+                                    nonsig_alpha = 0.4,
+                                    sig_size = 3,
+                                    nonsig_size = 2,
+                                    outlier_size = sig_size * 2.5) {
+  if (!all(outlier_index < nrow(data) & outlier_index > 0)) {
+    stop("Not all outlier indices valid.")
   }
   plot_data <- data.frame(
-    fold_change = dds_results$log2FoldChange,
-    log_p = -log10(dds_results$pvalue),
-    adj_pvalue = dds_results$padj,
+    fold_change = data[, fc_colname, drop = T],
+    log_p = -log10(data[, pvalue_colname, drop = T]),
+    adj_pvalue = data[, adj_pvalue_colname, drop = T],
     sig_class = "nonsignificant",
     stringsAsFactors = F
   )
-  rownames(plot_data) <- rownames(dds_results)
   is_upregulated <- (plot_data$adj_pvalue < sig_cutoff & plot_data$fold_change >= 0)
   is_downregulated <- (plot_data$adj_pvalue < sig_cutoff & plot_data$fold_change < 0)
-  is_outlier <- (plot_data$adj_pvalue < sig_cutoff & (rownames(plot_data) %in% outliers))
+  sig_outlier_index <- intersect(which(plot_data$adj_pvalue < sig_cutoff), outlier_index)
   if (any(is_upregulated)) {
     plot_data$sig_class[which(is_upregulated)] <- "up"
   }
   if (any(is_downregulated)) {
     plot_data$sig_class[which(is_downregulated)] <- "down"
   }
-  if (any(is_outlier)) {
-    plot_data$sig_class[which(is_outlier)] <- "outlier"
+  if (length(sig_outlier_index) > 0) {
+    plot_data$sig_class[sig_outlier_index] <- "outlier"
   }
   x_max <- max(plot_data$fold_change) * 1.1
   output_plot <- ggplot(plot_data, aes(x = fold_change, y = log_p)) +
