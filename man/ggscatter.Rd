@@ -16,7 +16,7 @@ ggscatter(
   point_size = 2,
   point_shape = 21,
   point_alpha = 0.75,
-  point_color = "white",
+  point_color = "gray30",
   point_fill = "gray30",
   palette = "Paired",
   equal_axes = F,
