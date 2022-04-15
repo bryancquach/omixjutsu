@@ -112,6 +112,142 @@ hist_boxplot <- function(data,
   return(ggout_list)
 }
 
+#' ggplot2-based scatterplot
+#'
+#' @param data A data frame or matrix with columns of interest for plotting.
+#' @param x_colname A string for the column variable to assign to the x-axis of the plot.
+#' @param y_colname A string for the column variable to assign to the y-axis of the plot.
+#' @param group_var A string or vector of strings for the grouping variable(s) to use from
+#' `data` to color points. If multiple variables are specified, they are combined into a single
+#' string to make a single new variable.
+#' @param title A string for the plot title.
+#' @param subtitle A string for the plot subtitle.
+#' @param x_title A string for the x-axis title.
+#' @param y_title A string for the y-axis title.
+#' @param point_size A numeric for the plot point size.
+#' @param point_shape A numeric for the plot point shape.
+#' @param point_alpha A numeric for the plot point alpha level.
+#' @param point_color A string for plot point color. Only used when `group_var` is `NULL`.
+#' @param point_fill A string for the plot point fill color. Only used when `group_var` is `NULL`.
+#' @param palette A string for the RColorBrewer palette name to use when `group_var` is specified.
+#' @param equal_axes A logical. Should the scatterplot use the same axis limits for both axes?
+#' @param diag A boolean denoting whether to include a 45-degree line through the origin.
+#' @return A ggplot2 object.
+#' @export
+ggscatter <- function(data,
+                      x_colname,
+                      y_colname,
+                      group_var = NULL,
+                      title = NULL,
+                      subtitle = NULL,
+                      x_title = NULL,
+                      y_title = NULL,
+                      point_size = 2,
+                      point_shape = 21,
+                      point_alpha = 0.75,
+                      point_color = "gray30",
+                      point_fill = "gray30",
+                      palette = "Paired",
+                      equal_axes = F,
+                      diag = F) {
+  if (is.null(group_var)) {
+    group_var_df <- data.frame(group = rep(1, nrow(data)))
+    group <- factor(group_var_df$group)
+  } else if (!all(group_var %in% colnames(data))) {
+    stop("the argument 'group_var' should specify only column names from 'data'")
+  } else {
+    if (length(group_var) > 1) {
+      tmp_df <- as.data.frame(data[, group_var, drop = FALSE])
+      group_var_df <- data.frame(group = apply(tmp_df, 1, paste, collapse = ":"))
+      group <- factor(group_var_df$group)
+    } else {
+      group <- data[, group_var, drop = T]
+    }
+  }
+  plot_data <- data.frame(
+    data[, x_colname],
+    data[, y_colname],
+    group
+  )
+  colnames(plot_data) <- c(x_colname, y_colname, "group")
+  ggout <- ggplot(
+    data, 
+    aes_string(x = x_colname, y = y_colname, fill = "group", color = "group")
+  ) +
+    geom_point(
+      size = point_size,
+      shape = point_shape,
+      alpha = point_alpha
+    ) +
+    labs(title = title, subtitle = subtitle, x = x_title, y = y_title, fill = "", color = "") +
+    theme(
+      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+      plot.title = element_text(size = 18),
+      plot.subtitle = element_text(size = 16),
+      axis.text = element_text(size = 18),
+      axis.title = element_text(size = 18),
+      axis.title.y = element_text(vjust = 3),
+      axis.title.x = element_text(vjust = -1),
+      legend.title = element_text(size = 16),
+      legend.text = element_text(size = 16)
+    )
+  if (equal_axes) {
+    data_min <- min(plot_data[, x_colname, drop = T], plot_data[, y_colname, drop = T], na.rm = T)
+    data_max <- max(plot_data[, x_colname, drop = T], plot_data[, y_colname, drop = T], na.rm = T)
+    axis_min <- switch(as.character(sign(data_min)),
+      "-1" = {
+        data_min * 1.05
+      },
+      "1" = {
+        data_min * 0.95
+      },
+      "0" = {
+        data_min - (diff(c(data_min, data_max)) * 0.05)
+      }
+    )
+    axis_max <- switch(as.character(sign(data_max)),
+      "-1" = {
+        data_max * 0.95
+      },
+      "1" = {
+        data_max * 1.05
+      },
+      "0" = {
+        data_max + (diff(c(data_min, data_max)) * 0.05)
+      }
+    )
+    ggout <- ggout +
+      xlim(axis_min, axis_max) +
+      ylim(axis_min, axis_max)
+  }  
+  if (diag) {
+    ggout <- ggout + 
+      geom_abline(
+        intercept = 0,
+        slope = 1,
+        linetype = "solid",
+        size = 1.5,
+        color = "red3",
+        alpha = 0.75
+      )
+  }
+  if (is.null(group_var)) {
+    ggout <- ggout +
+      scale_fill_manual(values = point_fill) +
+      scale_color_manual(values = point_color) +
+      theme(legend.position = "none")
+  } else {
+    if (class(group) == "factor") {
+      ggout <- ggout + scale_fill_brewer(palette = palette) + scale_color_brewer(palette = palette)
+    } else {
+      ggout <- ggout + 
+        scale_fill_distiller(palette = palette, direction = 1) +
+        scale_color_distiller(palette = palette, direction = 1) 
+    }
+  }
+  return(ggout)
+}
+
 #' ggplot2-based PCA plot
 #'
 #' Create an eigenvectors scatterplot from principal component analysis.
