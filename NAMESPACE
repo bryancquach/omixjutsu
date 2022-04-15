@@ -3,6 +3,8 @@
 S3method(low_expression_filter,DESeqDataSet)
 S3method(low_expression_filter,DGEList)
 S3method(low_expression_filter,matrix)
+S3method(ma_plot,DESeqResults)
+S3method(ma_plot,data.frame)
 export(assoc_matrix)
 export(below_max_cutoff)
 export(beta_to_mvalue)
