@@ -54,6 +54,7 @@ counts.DGEList <- function(object, normalized = F) {
 }
 
 #' @importFrom BiocGenerics counts
+#' @importFrom edgeR DGEList
 #' @export
 setMethod("counts", signature(object = "DGEList"), counts.DGEList)
 
