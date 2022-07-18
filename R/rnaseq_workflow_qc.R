@@ -2980,6 +2980,95 @@ plot_rin <- function(data,
   return(ggout_list)
 }
 
+#' Plot intergenic-genic ratio
+#'
+#' Create an intergenic-genic mapping proportion histogram and boxplot.
+#'
+#' Calculates the ratio between intergenic and genic mapping rates and plots this as a histogram
+#' and boxplot. The two plots are intended to be used as a single column, two row figure panel. The
+#' intergenic and genic mapping rates can be calculated uing
+#' \code{\link{plot_mapping_categories}}.
+#'
+#' @param data A three column data frame with intergenic, intronic, and exonic mapping rates as 
+#' the first, second, and third column, respectively.
+#' @param group A single column data frame denoting categorical variable values to use to
+#' partition the data points into separate distributions/boxplots. Row names should match
+#' rownames in `data`.
+#' @param ids A vector of row names for subsetting `data` for plotting.
+#' @param invert A logical. Should `ids` be used for excluding rows from plotting instead?
+#' @param return_data A logical. Should plot data be returned instead of a ggplot object?
+#' @inheritParams hist_boxplot2
+#' @return A list with two ggplot objects `hist` and `boxplot` corresponding to a histogram and
+#' jittered boxplot respectively. If `return_data` is `TRUE`, then a data frame with the plot
+#' data values and grouping variable.
+#' @seealso \code{\link{plot_mapping_categories}} \code{\link{hist_boxplot2}}
+#' @export
+plot_intergenic_genic_ratio <- function(data,
+                                        group = NULL,
+                                        ids = NULL,
+                                        invert = F,
+                                        return_data = F,
+                                        binsize = NULL,
+                                        colors = NULL,
+                                        hist_alpha = 0.75,
+                                        box_fill = "goldenrod",
+                                        box_alpha = 0.5,
+                                        box_lwd = 1,
+                                        jitter_alpha = 0.75,
+                                        jitter_size = 1.75,
+                                        x_title = "Intergenic-genic mappping ratio",
+                                        y_title = "Sample count") {
+  if (!is.null(ids)) {
+    if (invert) {
+      data <- data[!rownames(data) %in% ids, ]
+    } else {
+      data <- data[rownames(data) %in% ids, ]
+    }
+  }
+  colnames(data) <- c("intergenic", "intronic", "exonic")
+  contamination_ratio <- data$intergenic / (data$intronic + data$exonic)
+  group0 <- group
+  if (is.null(group)) {
+    group <- data.frame(group = factor(rep(1, nrow(data))))
+    rownames(group) <- rownames(data)
+  }
+  plot_data <- data.frame(values = contamination_ratio)
+  rownames(plot_data) <- rownames(data)
+  plot_data <- merge(x = plot_data, y = group, by = 0, all = F)
+  rownames(plot_data) <- plot_data[, 1]
+  plot_data <- plot_data[, -1] # remove new row name column
+  plot_data$values <- as.numeric(plot_data$values)
+  if (nrow(data) > nrow(plot_data)) {
+    warning("Not all samples from 'data' have a value in 'group'")
+  }
+  if (is.null(binsize)) {
+    binsize <- diff(range(plot_data$values)) / 25
+  }
+  if (return_data) {
+    return(plot_data)
+  }
+  ggout_list <- hist_boxplot2(
+    plot_data,
+    binsize = binsize,
+    colors = colors,
+    hist_alpha = hist_alpha,
+    box_fill = box_fill,
+    box_alpha = box_alpha,
+    box_lwd = box_lwd,
+    jitter_alpha = jitter_alpha,
+    jitter_size = jitter_size,
+    x_title = x_title,
+    y_title = y_title
+  )
+  if (is.null(group0)) {
+    ggout_list$hist <- ggout_list$hist +
+      theme(legend.position = "none")
+    ggout_list$boxplot <- ggout_list$boxplot +
+      theme(legend.position = "none")
+  }
+  return(ggout_list)
+}
+
 #' Plot DNA contamination ratio
 #'
 #' Create an intergenic-intronic mapping proportion histogram and boxplot.
@@ -3026,13 +3115,13 @@ plot_dna_contamination_ratio <- function(data,
     }
   }
   colnames(data) <- c("intergenic", "intronic")
-  contamination_ratio <- data$intergenic / data$intronic
+  mapping_ratio <- data$intergenic / data$intronic
   group0 <- group
   if (is.null(group)) {
     group <- data.frame(group = factor(rep(1, nrow(data))))
     rownames(group) <- rownames(data)
   }
-  plot_data <- data.frame(values = contamination_ratio)
+  plot_data <- data.frame(values = mapping_ratio)
   rownames(plot_data) <- rownames(data)
   plot_data <- merge(x = plot_data, y = group, by = 0, all = F)
   rownames(plot_data) <- plot_data[, 1]
