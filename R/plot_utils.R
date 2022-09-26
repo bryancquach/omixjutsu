@@ -171,7 +171,7 @@ ggscatter <- function(data,
   )
   colnames(plot_data) <- c(x_colname, y_colname, "group")
   ggout <- ggplot(
-    data, 
+    data,
     aes_string(x = x_colname, y = y_colname, fill = "group", color = "group")
   ) +
     geom_point(
@@ -219,9 +219,9 @@ ggscatter <- function(data,
     ggout <- ggout +
       xlim(axis_min, axis_max) +
       ylim(axis_min, axis_max)
-  }  
+  }
   if (diag) {
-    ggout <- ggout + 
+    ggout <- ggout +
       geom_abline(
         intercept = 0,
         slope = 1,
@@ -240,9 +240,9 @@ ggscatter <- function(data,
     if (class(group) == "factor") {
       ggout <- ggout + scale_fill_brewer(palette = palette) + scale_color_brewer(palette = palette)
     } else {
-      ggout <- ggout + 
+      ggout <- ggout +
         scale_fill_distiller(palette = palette, direction = 1) +
-        scale_color_distiller(palette = palette, direction = 1) 
+        scale_color_distiller(palette = palette, direction = 1)
     }
   }
   return(ggout)
@@ -686,7 +686,7 @@ grouped_barplot <- function(data,
   }
   use_na <- match.arg(use_na)
   freq_table <- table(data[, x_var], data[, y_var], useNA = use_na)
-  if(use_proportions) {
+  if (use_proportions) {
     freq_table <- apply(
       freq_table,
       2,
@@ -739,6 +739,16 @@ grouped_barplot <- function(data,
 #' @param legend_height A numeric for the height of the legend key in millimeters.
 #' @param row_ids An optional string vector of row names to retain for plotting.
 #' @param col_ids An optional string vector of column names to retain for plotting.
+#' @param add_border A boolean for whether certain cells be annotated with a specific border color
+#' based on `border_cutoff`.
+#' @param border_color A string for the cell border color. Only applies if `add_border` is `TRUE`.
+#' @param border_size A numeric for the cell border thickness. Only applies if `add_border` is
+#' `TRUE`.
+#' @param border_cutoff A numeric for the cutoff to use when determining which cells to annotate
+#' with `border_color` color. Selects cells with a value less than the specified value. Only
+#' applies if `add_border` is `TRUE`.
+#' @param border_cutoff_invert A boolean for whether to select cells with a value greater than the
+#' specified value of `border_cutoff`. Only applies if `add_border` is `TRUE`.
 #' @param ggfill An object returned by the family of `scale_fill_*` functions for continuous values
 #' that defines the color fill for the cells of the heatmap.
 #' @param reorder_matrix A boolean indicating if the columns and rows should be reordered such that
@@ -757,6 +767,11 @@ matrix_heatmap <- function(data,
                            legend_height = 20,
                            row_ids = NULL,
                            col_ids = NULL,
+                           add_border = F,
+                           border_color = "black",
+                           border_size = 1,
+                           border_cutoff = 0,
+                           border_cutoff_invert = F,
                            ggfill = scale_fill_gradient2(
                              name = "",
                              low = "steelblue4",
@@ -800,8 +815,18 @@ matrix_heatmap <- function(data,
     plot_data$covariate1 <- reorder(plot_data$covariate1, -plot_data$value)
     plot_data$covariate2 <- reorder(plot_data$covariate2, plot_data$value)
   }
+  plot_data$add_border <- F
+  if (add_border) {
+    if (border_cutoff_invert) {
+      plot_data$add_border <- plot_data$value > border_cutoff
+    } else {
+      plot_data$add_border <- plot_data$value < border_cutoff
+    }
+  }
   output_plot <- ggplot(plot_data, aes(y = covariate1, x = covariate2, fill = value)) +
-    geom_tile(colour = "white", height = 0.95, width = 0.95) +
+    geom_tile(aes(colour = add_border, size = add_border), height = 0.95, width = 0.95) +
+    scale_colour_manual(values = c("white", border_color), guide = "none") +
+    scale_size_manual(values = c(0, border_size), guide = "none")
     geom_text(aes(label = round(value, digits)), size = text_size) +
     ggfill +
     labs(x = x_title, y = y_title, title = title) +

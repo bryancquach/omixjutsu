@@ -11,6 +11,11 @@ matrix_heatmap(
   legend_height = 20,
   row_ids = NULL,
   col_ids = NULL,
+  add_border = F,
+  border_color = "black",
+  border_size = 1,
+  border_cutoff = 0,
+  border_cutoff_invert = F,
   ggfill = scale_fill_gradient2(name = "", low = "steelblue4", mid = "white", high =
     "red4", breaks = seq(-1, 1, 0.1), limits = c(-1, 1)),
   reorder_matrix = T,
@@ -33,6 +38,21 @@ matrix_heatmap(
 \item{row_ids}{An optional string vector of row names to retain for plotting.}
 
 \item{col_ids}{An optional string vector of column names to retain for plotting.}
+
+\item{add_border}{A boolean for whether certain cells be annotated with a specific border color
+based on \code{border_cutoff}.}
+
+\item{border_color}{A string for the cell border color. Only applies if \code{add_border} is \code{TRUE}.}
+
+\item{border_size}{A numeric for the cell border thickness. Only applies if \code{add_border} is
+\code{TRUE}.}
+
+\item{border_cutoff}{A numeric for the cutoff to use when determining which cells to annotate
+with \code{border_color} color. Selects cells with a value less than the specified value. Only
+applies if \code{add_border} is \code{TRUE}.}
+
+\item{border_cutoff_invert}{A boolean for whether to select cells with a value greater than the
+specified value of \code{border_cutoff}. Only applies if \code{add_border} is \code{TRUE}.}
 
 \item{ggfill}{An object returned by the family of \verb{scale_fill_*} functions for continuous values
 that defines the color fill for the cells of the heatmap.}
