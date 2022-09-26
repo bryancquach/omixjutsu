@@ -815,18 +815,18 @@ matrix_heatmap <- function(data,
     plot_data$covariate1 <- reorder(plot_data$covariate1, -plot_data$value)
     plot_data$covariate2 <- reorder(plot_data$covariate2, plot_data$value)
   }
-  plot_data$add_border <- F
+  plot_data$use_border <- F
   if (add_border) {
     if (border_cutoff_invert) {
-      plot_data$add_border <- plot_data$value > border_cutoff
+      plot_data$use_border <- plot_data$value > border_cutoff
     } else {
-      plot_data$add_border <- plot_data$value < border_cutoff
+      plot_data$use_border <- plot_data$value < border_cutoff
     }
   }
   output_plot <- ggplot(plot_data, aes(y = covariate1, x = covariate2, fill = value)) +
-    geom_tile(aes(colour = add_border, size = add_border), height = 0.95, width = 0.95) +
+    geom_tile(aes(colour = use_border, size = use_border), height = 0.95, width = 0.95) +
     scale_colour_manual(values = c("white", border_color), guide = "none") +
-    scale_size_manual(values = c(0, border_size), guide = "none")
+    scale_size_manual(values = c(0, border_size), guide = "none") +
     geom_text(aes(label = round(value, digits)), size = text_size) +
     ggfill +
     labs(x = x_title, y = y_title, title = title) +
