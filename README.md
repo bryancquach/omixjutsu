@@ -27,3 +27,5 @@ devtools::install_github("bryancquach/omixjutsu", ref = "<id>")
 # Example for a branch named 'example_branch'
 devtools::install_github("bryancquach/omixjutsu", ref = "example_branch")
 ```
+
+See [this GitHub issue](https://github.com/bryancquach/omixjutsu/issues/2#issue-1557056581) for troubleshooting common sources of installation failures.
